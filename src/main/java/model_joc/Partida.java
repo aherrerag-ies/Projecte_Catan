@@ -159,16 +159,6 @@ public class Partida {
 		this.guanyador = guanyador;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
 
 	
 
