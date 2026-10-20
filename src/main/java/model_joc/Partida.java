@@ -19,7 +19,7 @@ public class Partida {
 	
 	
 	@Id
-	@Column(name = "id", unique = true,nullable = false, length = 80)
+	@Column(name = "id_partida", unique = true,nullable = false, length = 80)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
