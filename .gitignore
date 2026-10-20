@@ -1,0 +1,37 @@
+# Maven
+target/
+ 
+# Eclipse
+.metadata/
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+.settings/
+.loadpath
+.recommenders/
+ 
+# Eclipse project files
+.classpath
+.project
+ 
+# IntelliJ
+.idea/
+*.iml
+ 
+# Visual Studio Code
+.vscode/
+ 
+# Logs
+*.log
+ 
+# Operating systems
+.DS_Store
+Thumbs.db
+ 
+# Environment and secret files
+.env
+application-local.properties
+application-secret.properties

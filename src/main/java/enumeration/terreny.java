@@ -1,0 +1,13 @@
+package enumeration;
+
+public enum Terreny {
+	
+    BOSC,
+    TURONS,
+    PASTURES,
+    CAMPS,
+    MUNTANYES,
+    DESERT
+
+
+}
