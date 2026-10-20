@@ -47,6 +47,127 @@ public class Partida {
 	
 	@Column(name = "guanyador", nullable = false, length = 10)
 	private Jugador guanyador;
+	
+	
+	//Constructor sense parametres
+	
+	public Partida() {
+	}
+
+	
+	//Constructor amb parametres
+	
+	public Partida(EstatPartida estat, Integer ronda, Integer ultimaTirada, Integer puntsPerGuanyar, Boolean dausTirats,
+			Boolean lladrePendent, Jugador jugadorActiu, Jugador guanyador) {
+		super();
+		this.estat = estat.PREPARACIO;
+		this.ronda = ronda;
+		this.ultimaTirada = ultimaTirada;
+		this.puntsPerGuanyar = puntsPerGuanyar;
+		this.dausTirats = dausTirats;
+		this.lladrePendent = lladrePendent;
+		this.jugadorActiu = jugadorActiu;
+		this.guanyador = guanyador;
+	}
+
+
+	
+	//Getters - Setters
+	
+	
+	public int getId() {
+		return id;
+	}
+
+
+	public EstatPartida getEstat() {
+		return estat;
+	}
+
+
+	public void setEstat(EstatPartida estat) {
+		this.estat = estat;
+	}
+
+
+	public Integer getRonda() {
+		return ronda;
+	}
+
+
+	public void setRonda(Integer ronda) {
+		this.ronda = ronda;
+	}
+
+
+	public Integer getUltimaTirada() {
+		return ultimaTirada;
+	}
+
+
+	public void setUltimaTirada(Integer ultimaTirada) {
+		this.ultimaTirada = ultimaTirada;
+	}
+
+
+	public Integer getPuntsPerGuanyar() {
+		return puntsPerGuanyar;
+	}
+
+
+	public void setPuntsPerGuanyar(Integer puntsPerGuanyar) {
+		this.puntsPerGuanyar = puntsPerGuanyar;
+	}
+
+
+	public Boolean getDausTirats() {
+		return dausTirats;
+	}
+
+
+	public void setDausTirats(Boolean dausTirats) {
+		this.dausTirats = dausTirats;
+	}
+
+
+	public Boolean getLladrePendent() {
+		return lladrePendent;
+	}
+
+
+	public void setLladrePendent(Boolean lladrePendent) {
+		this.lladrePendent = lladrePendent;
+	}
+
+
+	public Jugador getJugadorActiu() {
+		return jugadorActiu;
+	}
+
+
+	public void setJugadorActiu(Jugador jugadorActiu) {
+		this.jugadorActiu = jugadorActiu;
+	}
+
+
+	public Jugador getGuanyador() {
+		return guanyador;
+	}
+
+
+	public void setGuanyador(Jugador guanyador) {
+		this.guanyador = guanyador;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 
 	
