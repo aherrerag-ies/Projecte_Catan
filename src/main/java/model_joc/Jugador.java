@@ -58,11 +58,8 @@ import jakarta.validation.constraints.Size;
 	    @JoinColumn(name = "partida_id", nullable = false)
 	    private Partida partida;
 
-	    @OneToMany(
-	        mappedBy = "jugador",
-	        cascade = CascadeType.ALL,
-	        orphanRemoval = true
-	    )
+	    @OneToMany(mappedBy = "jugador", cascade = CascadeType.ALL,orphanRemoval = true)
+	    
 	    private List<RecursJugador> recursos = new ArrayList<>();
 	    
 	    
@@ -91,6 +88,9 @@ import jakarta.validation.constraints.Size;
 
 	        inicialitzarRecursos();
 	    }
+	    
+	    
+	    // Metode inicialitzarRecursos
 
 	    public void inicialitzarRecursos() {
 	        recursos.clear();
@@ -99,11 +99,16 @@ import jakarta.validation.constraints.Size;
 	            afegirRecurs(new RecursJugador(this, tipus));
 	        }
 	    }
+	    
+	    //Metode afegirRecurs
 
 	    public void afegirRecurs(RecursJugador recurs) {
 	        recurs.setJugador(this);
 	        recursos.add(recurs);
 	    }
+	    
+	    
+	    // Getter -  Setter
 
 	    public Long getId() {
 	        return id;

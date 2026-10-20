@@ -18,13 +18,8 @@ import jakarta.validation.constraints.NotNull;
 
 
 @Entity
-@Table(
-    name = "recurs_jugador",
-    uniqueConstraints = {
-        @UniqueConstraint(
-            name = "uk_recurs_jugador_tipus",
-            columnNames = {"jugador_id", "tipus"}
-        )
+@Table(name = "recurs_jugador",uniqueConstraints = {
+@UniqueConstraint( name = "uk_recurs_jugador_tipus",columnNames = {"jugador_id", "tipus"})
     }
 )
 
@@ -49,15 +44,24 @@ public class RecursJugador {
 	    @Min(0)
 	    @Column(name = "quantitat", nullable = false)
 	    private Integer quantitat = 0;
+	    
+	    
+	    //Constructor sense parametres
 
 	    public RecursJugador() {
+	    	
 	    }
 
+	    
+	    //Constructor amb parametres
+	    
 	    public RecursJugador(Jugador jugador, TipusRecurs tipus) {
 	        this.jugador = jugador;
 	        this.tipus = tipus;
 	        this.quantitat = 0;
 	    }
+	    
+	    //Getter - Setter
 
 	    public Long getId() {
 	        return id;
