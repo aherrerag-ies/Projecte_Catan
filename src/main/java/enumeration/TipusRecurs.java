@@ -7,5 +7,4 @@ public enum TipusRecurs {
     LLANA,
     BLAT,
     MINERAL
-
 }

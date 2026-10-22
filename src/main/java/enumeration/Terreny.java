@@ -8,6 +8,4 @@ public enum Terreny {
     CAMPS,
     MUNTANYES,
     DESERT
-
-
 }

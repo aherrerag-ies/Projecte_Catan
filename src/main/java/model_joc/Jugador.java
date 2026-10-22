@@ -1,6 +1,7 @@
 package model_joc;
 
 import java.util.ArrayList;
+
 import java.util.List;
 
 import abstracte.Construccio;
@@ -29,6 +30,10 @@ import jakarta.validation.constraints.Size;
 	@Table(name = "jugador")
 	public class Jugador {
 
+		
+		// Atributs //
+		
+		
 	    @Id
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	    private Long id;
@@ -60,6 +65,9 @@ import jakarta.validation.constraints.Size;
 
 	    @OneToMany(mappedBy = "jugador", cascade = CascadeType.ALL,orphanRemoval = true)
 	    
+	    
+	    // Listas //
+	    
 	    private List<RecursJugador> recursos = new ArrayList<>();
 	    
 	    
@@ -74,9 +82,16 @@ import jakarta.validation.constraints.Size;
 	    private List<Construccio> construccions = new ArrayList<>();
 
 	    private List<CartaDesenvolupament> cartes = new ArrayList<>();
+	    
+	    
+	    //Constructor sense parametres
 
 	    public Jugador() {
+	    	
 	    }
+	    
+	    
+	    //Constructor amb parametres
 
 	    public Jugador(String nom,ColorJugador color,Integer ordreTorn, Partida partida) {
 
@@ -88,6 +103,7 @@ import jakarta.validation.constraints.Size;
 
 	        inicialitzarRecursos();
 	    }
+	    
 	    
 	    
 	    // Metode inicialitzarRecursos
@@ -108,7 +124,7 @@ import jakarta.validation.constraints.Size;
 	    }
 	    
 	    
-	    // Getter -  Setter
+	    // Getters /  Setters
 
 	    public Long getId() {
 	        return id;
