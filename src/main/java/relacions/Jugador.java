@@ -1,12 +1,11 @@
 package relacions;
 
 import java.util.ArrayList;
-
 import java.util.List;
 
-import abstracte.Construccio;
 import enumeration.ColorJugador;
 import enumeration.TipusRecurs;
+import herencia.Construccio;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
