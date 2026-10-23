@@ -62,6 +62,9 @@ public class Partida {
 
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Aresta> arestes = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL,orphanRemoval = true)
+	private List<Jugador> jugadors = new ArrayList<>();
 
 	// Constructor sense parametres
 

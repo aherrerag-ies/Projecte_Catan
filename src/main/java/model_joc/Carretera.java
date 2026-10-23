@@ -16,6 +16,14 @@ public class Carretera extends Construccio {
 	@JoinColumn(name = "aresta_id", nullable = false,  unique = true)
 	private Aresta aresta;
 	
+	
+	protected Carretera() {
+		
+	}
+	protected Carretera(Aresta aresta) {
+		this.aresta = aresta;
+	}
+	
 	public Aresta getAresta() {
 		return aresta;
 	}
