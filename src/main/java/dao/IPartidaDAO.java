@@ -21,28 +21,28 @@ public interface IPartidaDAO extends IGenericDAO<Partida, Integer>{
 	 * per cada un, les construccions dels seus vèrtexs amb el propietari, 
 	 * mitjançant una consulta a la BD. Les carreteres no cal mostrar-les.
 	 */
-	String MostrarTauler(int idPartida);
+	void MostrarTauler(int idPartida);
 	
 	/*
 	 * MostrarPartida(int idPartida) → Mostra la situació de la partida 
 	 * en un moment donat extraient les dades de la BD.
 	 */
-	String MostrarPartida(int idPartida);
+	void MostrarPartida(int idPartida);
 	
 	/*
 	 *  Tira els daus i executa la producció:
 	 */
-	String TirarDaus(int idPartida);
+	void TirarDaus(int idPartida);
 	
 	/*
 	 * Comprova les condicions de victòria.
 	 */
-	String ComprovarVictoria(int idPartida);
+	void ComprovarVictoria(int idPartida);
 	
 	/*
 	 *  Torna el jugador amb l'exèrcit més gran.
 	 */
-	String ExercitMesGran(int idPartida);
+	void ExercitMesGran(int idPartida);
 	
 	
 	
