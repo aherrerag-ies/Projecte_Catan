@@ -108,6 +108,7 @@ public class CartaDesenvolupament {
 	
 	
 	// Equals //
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

@@ -47,12 +47,6 @@
 		<mapping class="dao.PartidaDAO"/>
 		<mapping class="dao.SessionManager"/>
 		
-			<!-- Entity package ENUMERATION -->
-		<mapping class="enumeration.ColorJugador"/>
-		<mapping class="enumeration.EstatPartida"/>
-		<mapping class="enumeration.Terreny"/>
-		<mapping class="enumeration.TipusCartaDesnevolupament"/>
-		<mapping class="enumeration.TipusRecurs"/>
 		
 			<!-- Entity package MODEL_JOC -->
 		<mapping class="model_joc.Carretera"/>
