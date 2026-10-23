@@ -8,7 +8,7 @@
 		<!-- Database Connection Settings -->
 		<property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
 		<!-- Això ho heu de canviar per les vostres dades -->
-		<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/videojocs?createDatabaseIfNotExist=true</property>
+		<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/catan?createDatabaseIfNotExist=true</property>
 		<property name="hibernate.connection.username">root</property>
 		<property name="hibernate.connection.password">super3</property>
 
@@ -38,30 +38,18 @@
 		<mapping class="asbtracte.Construccio"/>
 		<mapping class="asbtracte.Poblat"/>
 		
-			<!-- Entity package DAO -->
-		<mapping class="dao.GenericDAO"/>
-		<mapping class="dao.IGenericDAO"/>
-		<mapping class="dao.IJugadorDAO"/>
-		<mapping class="dao.IPartidaDAO"/>
-		<mapping class="dao.JugadorDAO"/>
-		<mapping class="dao.PartidaDAO"/>
-		<mapping class="dao.SessionManager"/>
-		
-		
-			<!-- Entity package MODEL_JOC -->
-		<mapping class="model_joc.Carretera"/>
-		<mapping class="model_joc.CartaDesenvolupament"/>
-		<mapping class="model_joc.Ciutat"/>
-		<mapping class="model_joc.Jugador"/>
-		<mapping class="model_joc.Partida"/>
-		<mapping class="model_joc.Poblat"/>
-		<mapping class="model_joc.RecursJugador"/>
-		
+			
 			<!-- Entity package TAULELL -->
 		<mapping class="taulell.Aresta"/>
 		<mapping class="taulell.Hexagon"/>
 		<mapping class="taulell.HegaxorVertex"/>
 		<mapping class="taulell.Vertex"/>
+		
+			<!-- Entity package RELACIONS -->
+		<mapping class="relacions.CartaDesenvolupament"/>
+		<mapping class="relacions.Jugador"/>
+		<mapping class="relacions.Partida"/>
+		<mapping class="relacions.RecursJugador"/>
 
 	</session-factory>
 </hibernate-configuration>

@@ -52,6 +52,7 @@ public class Partida {
 	@Column(name = "guanyador", nullable = false, length = 10)
 	private Jugador guanyador;
 	
+	
 
 	// Listas de taulell //
 
