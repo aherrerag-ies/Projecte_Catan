@@ -1,4 +1,4 @@
-package abstracte;
+package herencia;
 
 import java.util.Objects;
 
@@ -65,6 +65,7 @@ public abstract class Construccio {
 	public int hashCode() {
 		return Construccio.class.hashCode();
 	}
+	
 
 
 }

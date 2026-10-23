@@ -1,6 +1,5 @@
-package model_joc;
+package herencia;
 
-import abstracte.Construccio;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;

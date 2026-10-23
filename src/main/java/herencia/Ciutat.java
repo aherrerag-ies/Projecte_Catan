@@ -1,4 +1,4 @@
-package abstracte;
+package herencia;
 
 public class Ciutat extends Assentament {
 

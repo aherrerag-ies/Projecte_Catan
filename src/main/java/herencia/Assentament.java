@@ -1,4 +1,4 @@
-package abstracte;
+package herencia;
 
 import taulell.Vertex;
 
