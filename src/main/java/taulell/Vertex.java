@@ -23,7 +23,7 @@ public class Vertex {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private int id;
 
 	@NotNull
 	@Min(0)
@@ -60,7 +60,7 @@ public class Vertex {
 	
 	//Getters / Setters
 
-	public Long getId() {
+	public int getId() {
 		return id;
 	}
 
