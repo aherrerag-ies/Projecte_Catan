@@ -15,6 +15,8 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class CartaDesenvolupament {
 	
+	// Atributs //
+	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -35,11 +37,16 @@ public class CartaDesenvolupament {
 	
 	@Column(name="usada",nullable = false)
 	private Boolean usada;
+	
+	// Constructor sense parametres //
 
 	
 	protected CartaDesenvolupament() {
 		
 	}
+	
+	// Constructor amb parametres //
+	
 	protected CartaDesenvolupament(int id, TipusCartaDesenvolupament tipus,Partida partida, Jugador propetari,
 			Integer rondaCompra, Boolean usada) {
 		this.id = id;
@@ -50,6 +57,9 @@ public class CartaDesenvolupament {
 		this.usada = usada;
 		
 	}
+	
+	// Getters / Setters //
+	
 	public Integer getId() {
 		return id;
 	}
@@ -86,11 +96,18 @@ public class CartaDesenvolupament {
 	public void setUsada(Boolean usada) {
 		this.usada = usada;
 	}
+	
+	
+	// To string //
+	
 	@Override
 	public String toString() {
 		return "CartaDesenvolupament [id=" + id + ", tipus=" + tipus + ", partida=" + partida + ", propietari="
 				+ propietari + ", rondaCompra=" + rondaCompra + ", usada=" + usada + "]";
 	}
+	
+	
+	// Equals //
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -99,6 +116,8 @@ public class CartaDesenvolupament {
 			return false;
 		return getId() != null && getId().equals(other.getId());
 	}
+	
+	//HashCode
 
 	@Override
 	public int hashCode() {
