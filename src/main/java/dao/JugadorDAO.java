@@ -1,5 +1,7 @@
 package dao;
 
-public class JugadorDAO {
+import model_joc.Partida;
+
+public class JugadorDAO extends GenericDAO<Partida, Integer> implements IJugadorDAO {
 
 }
