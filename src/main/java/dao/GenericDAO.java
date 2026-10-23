@@ -7,8 +7,6 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
-import patroDAO.SessionManager;
-
 
 public class GenericDAO<T, ID extends Serializable> implements IGenericDAO<T, ID>  {
 
