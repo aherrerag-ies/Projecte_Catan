@@ -1,12 +1,16 @@
 package relacions;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import enumeration.EstatPartida;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,12 +28,17 @@ public class Partida {
 	// Atributs //
 
 	@Id
-	@Column(name = "id_partida", unique = true, nullable = false, length = 80)
+	@Column(name = "id", unique = true, nullable = false, length = 80)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 
-	@Column(nullable = false, length = 80)
+	@Column(name="estat",nullable = false, length = 80)
+	@Enumerated(EnumType.STRING)
 	private EstatPartida estat;
+	
+	@Column(name="dataInici",nullable = false, length = 80)
+	//falta algo mas en date @
+	private Date dataInici;
 
 	@Column(name = "ronda", nullable = false, length = 80)
 	private Integer ronda;
@@ -40,16 +49,18 @@ public class Partida {
 	@Column(name = "punts_per_guanyar", nullable = false, length = 80)
 	private Integer puntsPerGuanyar;
 
-	@Column(name = "daus_tirats", nullable = false, length = 10)
+	@Column(name = "daus_tirats", nullable = false)
 	private Boolean dausTirats;
 
-	@Column(name = "lladre_pendent", nullable = false, length = 10)
+	@Column(name = "lladre_pendent", nullable = false)
 	private Boolean lladrePendent;
 
 	@Column(name = "jugador_actiu", nullable = false, length = 10)
+	//Falta relacion 1:1
 	private Jugador jugadorActiu;
 
 	@Column(name = "guanyador", nullable = false, length = 10)
+	//Falta relacion 1:1
 	private Jugador guanyador;
 	
 
@@ -67,6 +78,10 @@ public class Partida {
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL,orphanRemoval = true)
 	private List<Jugador> jugadors = new ArrayList<>();
 
+	//FALTA	relacio con carta desenvolupament 1:N 
+	
+	//Relacion lladre a Hexagon 1:1
+	
 	// Constructor sense parametres
 
 	public Partida() {
@@ -85,6 +100,7 @@ public class Partida {
 		this.lladrePendent = lladrePendent;
 		this.jugadorActiu = jugadorActiu;
 		this.guanyador = guanyador;
+		// this.dataInici
 	}
 
 	// Getters / Setters
@@ -120,7 +136,7 @@ public class Partida {
 	public Integer getPuntsPerGuanyar() {
 		return puntsPerGuanyar;
 	}
-
+	//Metodo para añadir los puntos que nosotros queramos para ganar
 	public void setPuntsPerGuanyar(Integer puntsPerGuanyar) {
 		this.puntsPerGuanyar = puntsPerGuanyar;
 	}

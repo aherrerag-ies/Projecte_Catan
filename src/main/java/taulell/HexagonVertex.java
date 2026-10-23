@@ -2,6 +2,7 @@ package taulell;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,13 +27,13 @@ public class HexagonVertex {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "hexagon_id", nullable = false)
 	private Hexagon hexagon;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "vertex_id", nullable = false)
 	private Vertex vertex;
 
@@ -40,7 +41,7 @@ public class HexagonVertex {
 	@Min(0)
 	@Max(5)
 	@Column(name = "posicio", nullable = false)
-	private Integer posicio;
+	private int posicio;
 	
 	
 	//Constructor sense parametres

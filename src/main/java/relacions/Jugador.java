@@ -35,7 +35,7 @@ import jakarta.validation.constraints.Size;
 		
 	    @Id
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private Long id;
+	    private Integer id;
 
 	    @NotBlank
 	    @Size(max = 50)
@@ -56,17 +56,16 @@ import jakarta.validation.constraints.Size;
 	    @NotNull
 	    @Min(0)
 	    @Column(name = "cavallers_jugats", nullable = false)
-	    private Integer cavallersJugats = 0;
+	    private int cavallersJugats = 0;
 
 	    @ManyToOne(optional = false)
 	    @JoinColumn(name = "partida_id", nullable = false)
 	    private Partida partida;
 
-	    @OneToMany(mappedBy = "jugador", cascade = CascadeType.ALL,orphanRemoval = true)
 	    
 	    
 	    // Listas //
-	    
+	    @OneToMany(mappedBy = "jugador", cascade = CascadeType.ALL,orphanRemoval = true)
 	    private List<RecursJugador> recursos = new ArrayList<>();
 	    
 	    
@@ -77,8 +76,9 @@ import jakarta.validation.constraints.Size;
 	     * sean entidades. 
 	     */
 	    
-	    
+	    //FALTA MAPPEAR
 	    private List<Construccio> construccions = new ArrayList<>();
+	    //FALTA MAPPEAR
 
 	    private List<CartaDesenvolupament> cartes = new ArrayList<>();
 	    
@@ -125,7 +125,7 @@ import jakarta.validation.constraints.Size;
 	    
 	    // Getters /  Setters
 
-	    public Long getId() {
+	    public Integer getId() {
 	        return id;
 	    }
 

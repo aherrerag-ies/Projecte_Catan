@@ -16,7 +16,7 @@ import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import model_joc.Partida;
+import relacions.Partida;
 
 
 
@@ -35,20 +35,20 @@ public class Hexagon {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@NotNull
 	@Min(0)
 	@Column(name = "codi", nullable = false)
-	private Integer codi;
+	private int codi;
 
 	@NotNull
 	@Column(name = "coordenada_q", nullable = false)
-	private Integer q;
+	private int q;
 
 	@NotNull
 	@Column(name = "coordenada_r", nullable = false)
-	private Integer r;
+	private int r;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "terreny", length = 20)
@@ -63,6 +63,8 @@ public class Hexagon {
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "partida_id", nullable = false)
 	private Partida partida;
+	
+	//Falta relacion con HexagonVertex (lista onetomany) & mappear
 	
 	//Constructor sense parametres
 	
@@ -90,7 +92,7 @@ public class Hexagon {
     
     // Getters / Setters
     
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
