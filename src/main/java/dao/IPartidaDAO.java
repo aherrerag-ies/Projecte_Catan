@@ -1,7 +1,7 @@
 package dao;
 import java.util.List;
 
-import model_joc.Partida;
+import relacions.Partida;
 
 public interface IPartidaDAO extends IGenericDAO<Partida, Integer>{
 

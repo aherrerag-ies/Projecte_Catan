@@ -58,7 +58,7 @@ public class Hexagon {
 	@Min(2)
 	@Max(12)
 	@Column(name = "numero", nullable = true)
-	private Integer numero;		// Numero entre 2 i 12 
+	private int numero;		// Numero entre 2 i 12 
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "partida_id", nullable = false)

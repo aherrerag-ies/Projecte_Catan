@@ -63,6 +63,7 @@ public class Partida {
 	//Falta relacion 1:1
 	private Jugador guanyador;
 	
+	
 
 	// Listas de taulell //
 

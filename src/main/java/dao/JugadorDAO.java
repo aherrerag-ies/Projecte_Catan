@@ -3,7 +3,7 @@ package dao;
 import java.util.List;
 
 import enumeration.TipusRecurs;
-import model_joc.Jugador;
+import relacions.Jugador;
 import taulell.Vertex;
 
 public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugadorDAO {
