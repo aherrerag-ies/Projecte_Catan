@@ -1,7 +1,5 @@
 package herencia;
 
-import java.util.Objects;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,64 +8,85 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import model_joc.Jugador;
-
+import jakarta.persistence.Table;
+import relacions.Jugador;
 
 @Entity
+@Table(name = "construccio")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Construccio {
-	
+
+	// Atributs //
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+
 	
-	@ManyToOne
-	@JoinColumn(name = "jugador_id")
+	// Jugador propietari de la construcció //
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "propietari_id", nullable = false)
 	private Jugador propietari;
-	
-	protected Construccio(){
-		
+
+	// Constructor sense parametres //
+
+	protected Construccio() {
+
 	}
-	
-	protected Construccio(int id,Jugador propetari){
-		this.id = id;
+
+	// Constructor amb parametres //
+
+	protected Construccio(Jugador propetari) {
 		this.propietari = propetari;
 	}
-	
+
+	// Getters / Setters //
+
 	public Integer getId() {
 		return id;
 	}
-	public void setId(int id) {
-		this.id = id;
-	}
+
 	public Jugador getPropietari() {
 		return propietari;
 	}
+
 	public void setPropietari(Jugador propietari) {
+
+		if (propietari == null) {
+			throw new IllegalArgumentException("El propietari no pot ser null");
+		}
+
 		this.propietari = propietari;
 	}
+
+	// toString //
+
 	@Override
 	public String toString() {
-		return "Construccio [id=" + id + ", propietari=" + propietari + "]";
+		return "Construccio [id=" + id + ", propietariId=" + (propietari != null ? propietari.getId() : null) + "]";
 	}
-	
+
+	// Equals //
+
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+
+		if (this == obj) {
 			return true;
-		if (!(obj instanceof Construccio other))
+		}
+
+		if (!(obj instanceof Construccio other)) {
 			return false;
-		return getId() != null && getId().equals(other.getId());
+		}
+
+		return id != null && id.equals(other.id);
 	}
+
+	// hashCode
 
 	@Override
 	public int hashCode() {
 		return Construccio.class.hashCode();
 	}
-	
-
 
 }
-
-

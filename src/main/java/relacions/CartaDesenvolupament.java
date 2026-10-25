@@ -10,33 +10,59 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 
 @Entity
+@Table(name = "carta_desenvolupament")
 public class CartaDesenvolupament {
 	
 	// Atributs //
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Integer id; 
 	
+	// Tipus carta //
+	
+	@NotNull
 	@Enumerated(EnumType.STRING)
-	private TipusCartaDesenvolupament tipus;
+	@Column(name = "tipus", nullable = false, length = 30)
+	private TipusCartaDesenvolupament tipus; // CAVALLER , MONOPOLI O PUNT_VICTORIA
 	
-	@ManyToOne
-	@JoinColumn(name = "partida_id")
+	
+	// Partida a la qual pertany la carta //
+	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "partida_id", nullable = false)
 	private Partida partida;
 	
-	@ManyToOne
-	@JoinColumn(name = "jugador_id")
-	private Jugador propietari;
 	
-	@Column(name="ronda_comprar",nullable = false, length = 80)
+	// Ronda en què es compra //
+	
+	@Min(1)
+	@Column(name = "ronda_compra", nullable = true)
 	private Integer rondaCompra;
 	
-	@Column(name="usada",nullable = false)
-	private Boolean usada;
+	
+	
+	//  Indica si la carta ja s'ha utilitzat //
+	@NotNull
+	@Column(name = "usada", nullable = false)
+	private Boolean usada = false;
+	
+	
+	// Jugador propietari de la carta //
+	
+	@ManyToOne
+	@JoinColumn(name = "propietari_id", nullable = true)
+	private Jugador propietari;
+	
+	
+	
+	
 	
 	// Constructor sense parametres //
 
@@ -45,27 +71,31 @@ public class CartaDesenvolupament {
 		
 	}
 	
+	
+	
+	
 	// Constructor amb parametres //
 	
-	protected CartaDesenvolupament(int id, TipusCartaDesenvolupament tipus,Partida partida, Jugador propetari,
+	public CartaDesenvolupament(TipusCartaDesenvolupament tipus,Partida partida, Jugador propietari,
 			Integer rondaCompra, Boolean usada) {
-		this.id = id;
 		this.tipus = tipus;
 		this.partida = partida;
-		this.propietari = propetari;
+		this.propietari = propietari;
 		this.rondaCompra = rondaCompra;
 		this.usada = usada;
 		
 	}
+	
+	
+	
+	
 	
 	// Getters / Setters //
 	
 	public Integer getId() {
 		return id;
 	}
-	public void setId(int id) {
-		this.id = id;
-	}
+	
 	public TipusCartaDesenvolupament getTipus() {
 		return tipus;
 	}
@@ -118,7 +148,7 @@ public class CartaDesenvolupament {
 		return getId() != null && getId().equals(other.getId());
 	}
 	
-	//HashCode
+	// HashCode //
 
 	@Override
 	public int hashCode() {

@@ -42,7 +42,7 @@ public class Partida {
 	private Date dataInici;
 
 	@Column(name = "ronda", nullable = false)
-	private Integer ronda;
+	private int ronda;
 
 	@Column(name = "ultima_tirada", nullable = true)
 	private Integer ultimaTirada;
@@ -116,7 +116,7 @@ public class Partida {
 
 	// Constructor amb parametres //
 
-	public Partida(EstatPartida estat, Date dataInici, Integer ronda, Integer ultimaTirada, Integer puntsPerGuanyar, Boolean dausTirats,
+	public Partida(EstatPartida estat, Date dataInici, int ronda, Integer ultimaTirada, Integer puntsPerGuanyar, Boolean dausTirats,
 			Boolean lladrePendent, Jugador jugadorActiu, Jugador guanyador) {
 		super();
 		this.estat = estat.PREPARACIO;
@@ -148,11 +148,11 @@ public class Partida {
 		this.estat = estat;
 	}
 
-	public Integer getRonda() {
+	public int getRonda() {
 		return ronda;
 	}
 
-	public void setRonda(Integer ronda) {
+	public void setRonda(int ronda) {
 		this.ronda = ronda;
 	}
 
@@ -173,7 +173,8 @@ public class Partida {
 	
 	 public void setPuntsPerGuanyar(Integer puntsPerGuanyar) {
 
-	        if (puntsPerGuanyar == null || puntsPerGuanyar < 1) {
+	        if (puntsPerGuanyar == null || 
+	        		puntsPerGuanyar < 1) {
 	            throw new IllegalArgumentException(
 	                "Els punts per guanyar han de ser superiors a zero"
 	            );
