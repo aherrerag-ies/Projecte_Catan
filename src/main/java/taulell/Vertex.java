@@ -31,9 +31,8 @@ public class Vertex {
 	@Column(name = "codi", nullable = false)
 	private Integer codi;
 
-<<<<<<< HEAD
-	@ManyToOne(optional = false)
-=======
+
+
 	@NotNull
 	@Column(name = "coordenada_x", nullable = false)
 	private Double x;
@@ -43,7 +42,6 @@ public class Vertex {
 	private Double y;
 
 	@ManyToOne(optional = false,fetch = FetchType.EAGER)
->>>>>>> a6846773897f28685e733c7e7fa25db127b7eed3
 	@JoinColumn(name = "partida_id", nullable = false)
 	private Partida partida;
 	

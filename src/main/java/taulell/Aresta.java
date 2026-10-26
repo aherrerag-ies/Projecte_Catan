@@ -13,6 +13,7 @@ import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import model_joc.Partida;
+import relacions.Llancament;
 
 @Entity
 @Table(name = "aresta", uniqueConstraints = {
@@ -23,12 +24,12 @@ public class Aresta {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@NotNull
 	@Min(0)
 	@Column(name = "codi", nullable = false)
-	private Integer codi;
+	private int codi;
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "partida_id", nullable = false)
@@ -62,7 +63,7 @@ public class Aresta {
 	
 	//Getters / Setters
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
@@ -96,5 +97,16 @@ public class Aresta {
 
 	public void setVertexB(Vertex vertexB) {
 		this.vertexB = vertexB;
+	}
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Aresta other)) return false;
+		return getId() != null && getId().equals(other.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		return Aresta.class.hashCode();
 	}
 }

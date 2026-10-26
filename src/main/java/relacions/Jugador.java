@@ -248,27 +248,15 @@ public class Jugador {
 	// HASHCODE //
 
 	@Override
-	public int hashCode() {
-		return getClass().hashCode();
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Jugador other)) return false;
+		return getId() != null && getId().equals(other.getId());
 	}
-	
-	
-	
-
-	// EQUALS //
 
 	@Override
-	public boolean equals(Object obj) {
-
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof Jugador other)) {
-			return false;
-		}
-
-		return id != null && id.equals(other.id);
+	public int hashCode() {
+		return Jugador.class.hashCode();
 	}
 	
 	

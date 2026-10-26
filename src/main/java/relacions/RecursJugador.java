@@ -60,7 +60,7 @@ public class RecursJugador {
 	@NotNull
 	@Min(0)
 	@Column(name = "quantitat", nullable = false)
-	private Integer quantitat = 0;
+	private int quantitat = 0;
 	
 	
 
@@ -113,24 +113,15 @@ public class RecursJugador {
 	// HASHCODE //
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(id, jugador, quantitat, tipus);
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof RecursJugador other)) return false;
+		return getId() != null && getId().equals(other.getId());
 	}
 
-
-	// EQUALS //
-
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		RecursJugador other = (RecursJugador) obj;
-		return Objects.equals(id, other.id) && Objects.equals(jugador, other.jugador)
-				&& Objects.equals(quantitat, other.quantitat) && tipus == other.tipus;
+	public int hashCode() {
+		return RecursJugador.class.hashCode();
 	}
 
 

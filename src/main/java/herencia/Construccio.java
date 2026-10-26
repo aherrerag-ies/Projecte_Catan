@@ -69,20 +69,11 @@ public abstract class Construccio {
 	// Equals //
 
 	@Override
-	public boolean equals(Object obj) {
-
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof Construccio other)) {
-			return false;
-		}
-
-		return id != null && id.equals(other.id);
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Construccio other)) return false;
+		return getId() != null && getId().equals(other.getId());
 	}
-
-	// hashCode
 
 	@Override
 	public int hashCode() {

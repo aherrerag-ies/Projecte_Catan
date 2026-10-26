@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import taulell.Aresta;
 import taulell.Hexagon;
@@ -59,7 +60,7 @@ public class Partida {
 	
 	// Relacions amb jugador //
 	
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name = "jugador_actiu_id", nullable = true)
 	//Falta relacion 1:1
 	private Jugador jugadorActiu;
@@ -136,7 +137,7 @@ public class Partida {
 
 	// Getters / Setters
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
@@ -213,6 +214,18 @@ public class Partida {
 
 	public void setGuanyador(Jugador guanyador) {
 		this.guanyador = guanyador;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Partida other)) return false;
+		return getId() != null && getId().equals(other.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		return Partida.class.hashCode();
 	}
 
 }
