@@ -30,14 +30,6 @@ public class Vertex {
 	@Column(name = "codi", nullable = false)
 	private Integer codi;
 
-	@NotNull
-	@Column(name = "coordenada_x", nullable = false)
-	private Double x;
-
-	@NotNull
-	@Column(name = "coordenada_y", nullable = false)
-	private Double y;
-
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "partida_id", nullable = false)
 	private Partida partida;
