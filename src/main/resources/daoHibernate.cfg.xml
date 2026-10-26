@@ -25,11 +25,23 @@
 		<property name="hibernate.format_sql">true</property>
 
 		<!-- Les MATEIXES entitats de la sessió de relacions: no es copia cap classe -->
-		<mapping class="relacions.Estudi"/>
-		<mapping class="relacions.Videojoc"/>
-		<mapping class="relacions.FitxaTecnica"/>
-		<mapping class="relacions.Categoria"/>
-		<mapping class="relacions.Plataforma"/>
-		<mapping class="relacions.Llancament"/>
+		<!-- Entity package ABSTRACTE -->
+		<mapping class="asbtracte.Assentament"/>
+		<mapping class="asbtracte.Ciutat"/>
+		<mapping class="asbtracte.Construccio"/>
+		<mapping class="asbtracte.Poblat"/>
+		
+			
+			<!-- Entity package TAULELL -->
+		<mapping class="taulell.Aresta"/>
+		<mapping class="taulell.Hexagon"/>
+		<mapping class="taulell.HegaxorVertex"/>
+		<mapping class="taulell.Vertex"/>
+		
+			<!-- Entity package RELACIONS -->
+		<mapping class="relacions.CartaDesenvolupament"/>
+		<mapping class="relacions.Jugador"/>
+		<mapping class="relacions.Partida"/>
+		<mapping class="relacions.RecursJugador"/>
 	</session-factory>
 </hibernate-configuration>
