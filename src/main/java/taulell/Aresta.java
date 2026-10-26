@@ -12,12 +12,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-<<<<<<< HEAD
-import model_joc.Partida;
-import relacions.Llancament;
-=======
 import relacions.Partida;
->>>>>>> 17876387500c92029261ca280e25a9af79c412a8
 
 @Entity
 @Table(name = "aresta", uniqueConstraints = {

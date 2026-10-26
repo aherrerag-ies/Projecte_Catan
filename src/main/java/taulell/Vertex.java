@@ -31,12 +31,8 @@ public class Vertex {
 	@Column(name = "codi", nullable = false)
 	private int codi;
 
-<<<<<<< HEAD
-
-
-=======
 	@ManyToOne(optional = false)
->>>>>>> 17876387500c92029261ca280e25a9af79c412a8
+
 	@NotNull
 	@Column(name = "coordenada_x", nullable = false)
 	private double x;
