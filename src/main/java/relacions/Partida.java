@@ -1,15 +1,20 @@
 package relacions;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import enumeration.EstatPartida;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import taulell.Aresta;
@@ -28,33 +33,52 @@ public class Partida {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(nullable = false, length = 80)
+	@Column(name="estat",nullable = false)
+	@Enumerated(EnumType.STRING)
 	private EstatPartida estat;
+	
+	@Column(name="data_inici",nullable = false)
+	//falta algo mas en date @
+	private Date dataInici;
 
-	@Column(name = "ronda", nullable = false, length = 80)
-	private Integer ronda;
+	@Column(name = "ronda", nullable = false)
+	private int ronda;
 
-	@Column(name = "ultima_tirada", nullable = false, length = 80)
+	@Column(name = "ultima_tirada", nullable = true)
 	private Integer ultimaTirada;
 
-	@Column(name = "punts_per_guanyar", nullable = false, length = 80)
+	@Column(name = "punts_per_guanyar", nullable = false)
 	private Integer puntsPerGuanyar;
 
-	@Column(name = "daus_tirats", nullable = false, length = 10)
+	@Column(name = "daus_tirats", nullable = false)
 	private Boolean dausTirats;
 
-	@Column(name = "lladre_pendent", nullable = false, length = 10)
+	@Column(name = "lladre_pendent", nullable = false)
 	private Boolean lladrePendent;
 
-	@Column(name = "jugador_actiu", nullable = false, length = 10)
+	
+	// Relacions amb jugador //
+	
+	@ManyToOne
+	@JoinColumn(name = "jugador_actiu_id", nullable = true)
+	//Falta relacion 1:1
 	private Jugador jugadorActiu;
 
-	@Column(name = "guanyador", nullable = false, length = 10)
+	@ManyToOne
+	@JoinColumn(name = "guanyador_id", nullable = true)
 	private Jugador guanyador;
 	
 	
+	// Relacions amb lladre //
+	
+	@ManyToOne
+	@JoinColumn(name = "hexagon_lladre_id", nullable = true)
+	private Hexagon hexagonLladre;
+	
 
-	// Listas de taulell //
+	// Relacions amb taulell //
+	
+	
 
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Hexagon> hexagons = new ArrayList<>();
@@ -65,20 +89,38 @@ public class Partida {
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Aresta> arestes = new ArrayList<>();
 	
+	
+	// Relacions amb els jugadors //
+	
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL,orphanRemoval = true)
 	private List<Jugador> jugadors = new ArrayList<>();
+	
+	
+	
+	// Relacions amb cartes desenvolupament //
+	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL,orphanRemoval = true)
+	private List<CartaDesenvolupament> cartes = new ArrayList<>();
 
-	// Constructor sense parametres
+	
+	
+	
+	
+	// Constructor sense parametres //
 
 	public Partida() {
+		
 	}
+	
+	
+	
 
-	// Constructor amb parametres
+	// Constructor amb parametres //
 
-	public Partida(EstatPartida estat, Integer ronda, Integer ultimaTirada, Integer puntsPerGuanyar, Boolean dausTirats,
+	public Partida(EstatPartida estat, Date dataInici, int ronda, Integer ultimaTirada, Integer puntsPerGuanyar, Boolean dausTirats,
 			Boolean lladrePendent, Jugador jugadorActiu, Jugador guanyador) {
 		super();
 		this.estat = estat.PREPARACIO;
+		this.dataInici = dataInici;	
 		this.ronda = ronda;
 		this.ultimaTirada = ultimaTirada;
 		this.puntsPerGuanyar = puntsPerGuanyar;
@@ -86,6 +128,10 @@ public class Partida {
 		this.lladrePendent = lladrePendent;
 		this.jugadorActiu = jugadorActiu;
 		this.guanyador = guanyador;
+		
+		
+		
+		
 	}
 
 	// Getters / Setters
@@ -102,11 +148,11 @@ public class Partida {
 		this.estat = estat;
 	}
 
-	public Integer getRonda() {
+	public int getRonda() {
 		return ronda;
 	}
 
-	public void setRonda(Integer ronda) {
+	public void setRonda(int ronda) {
 		this.ronda = ronda;
 	}
 
@@ -121,10 +167,21 @@ public class Partida {
 	public Integer getPuntsPerGuanyar() {
 		return puntsPerGuanyar;
 	}
+	
+	
+	//Metodo para añadir los puntos que nosotros queramos para ganar
+	
+	 public void setPuntsPerGuanyar(Integer puntsPerGuanyar) {
 
-	public void setPuntsPerGuanyar(Integer puntsPerGuanyar) {
-		this.puntsPerGuanyar = puntsPerGuanyar;
-	}
+	        if (puntsPerGuanyar == null || 
+	        		puntsPerGuanyar < 1) {
+	            throw new IllegalArgumentException(
+	                "Els punts per guanyar han de ser superiors a zero"
+	            );
+	        }
+
+	        this.puntsPerGuanyar = puntsPerGuanyar;
+	    }
 
 	public Boolean getDausTirats() {
 		return dausTirats;

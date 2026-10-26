@@ -64,6 +64,8 @@ public class Hexagon {
 	@JoinColumn(name = "partida_id", nullable = false)
 	private Partida partida;
 	
+	//Falta relacion con HexagonVertex (lista onetomany) & mappear
+	
 	//Constructor sense parametres
 	
 	public Hexagon() {
@@ -90,7 +92,7 @@ public class Hexagon {
     
     // Getters / Setters
     
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
