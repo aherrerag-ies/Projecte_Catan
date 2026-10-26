@@ -63,7 +63,7 @@ public class HexagonVertex {
 	
 	//Getters / Setters
 
-	public Long getId() {
+	public int getId() {
 		return id;
 	}
 
@@ -83,7 +83,7 @@ public class HexagonVertex {
 		this.vertex = vertex;
 	}
 
-	public Integer getPosicio() {
+	public int getPosicio() {
 		return posicio;
 	}
 

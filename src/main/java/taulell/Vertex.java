@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import model_joc.Partida;
+import relacions.Partida;
 
 @Entity
 @Table(name = "vertex", uniqueConstraints = {
@@ -29,21 +29,18 @@ public class Vertex {
 	@NotNull
 	@Min(0)
 	@Column(name = "codi", nullable = false)
-	private Integer codi;
+	private int codi;
 
-<<<<<<< HEAD
 	@ManyToOne(optional = false)
-=======
 	@NotNull
 	@Column(name = "coordenada_x", nullable = false)
-	private Double x;
+	private double x;
 
 	@NotNull
 	@Column(name = "coordenada_y", nullable = false)
-	private Double y;
+	private double y;
 
 	@ManyToOne(optional = false,fetch = FetchType.EAGER)
->>>>>>> a6846773897f28685e733c7e7fa25db127b7eed3
 	@JoinColumn(name = "partida_id", nullable = false)
 	private Partida partida;
 	

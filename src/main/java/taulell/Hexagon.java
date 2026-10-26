@@ -79,14 +79,17 @@ public class Hexagon {
             Integer codi,
             Integer q,
             Integer r,
-            Partida partida) {
+            Terreny terreny,
+            Integer numero,
+            Partida partida
+            ) {
 
         this.codi = codi;
         this.q = q;
         this.r = r;
+        this.numero = numero;
         this.partida = partida;
-        this.terreny = null;
-        this.numero = null;
+        this.terreny = null;       
     }
     
     
@@ -96,7 +99,7 @@ public class Hexagon {
         return id;
     }
 
-    public Integer getCodi() {
+    public int getCodi() {
         return codi;
     }
 
@@ -104,7 +107,7 @@ public class Hexagon {
         this.codi = codi;
     }
 
-    public Integer getQ() {
+    public int getQ() {
         return q;
     }
 
@@ -112,7 +115,7 @@ public class Hexagon {
         this.q = q;
     }
 
-    public Integer getR() {
+    public int getR() {
         return r;
     }
 

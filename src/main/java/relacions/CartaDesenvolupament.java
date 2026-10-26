@@ -44,14 +44,14 @@ public class CartaDesenvolupament {
 	
 	@Min(1)
 	@Column(name = "ronda_compra", nullable = true)
-	private Integer rondaCompra;
+	private Integer rondaCompra = null;
 	
 	
 	
 	//  Indica si la carta ja s'ha utilitzat //
 	@NotNull
 	@Column(name = "usada", nullable = false)
-	private Boolean usada = false;
+	private boolean usada = false;
 	
 	
 	// Jugador propietari de la carta //

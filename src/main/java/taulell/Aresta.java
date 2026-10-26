@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import model_joc.Partida;
+import relacions.Partida;
 
 @Entity
 @Table(name = "aresta", uniqueConstraints = {
@@ -23,12 +23,12 @@ public class Aresta {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@NotNull
 	@Min(0)
 	@Column(name = "codi", nullable = false)
-	private Integer codi;
+	private int codi;
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "partida_id", nullable = false)
@@ -62,11 +62,11 @@ public class Aresta {
 	
 	//Getters / Setters
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public Integer getCodi() {
+	public int getCodi() {
 		return codi;
 	}
 
