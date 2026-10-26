@@ -79,7 +79,6 @@ public class Partida {
 
 	// Relacions amb taulell //
 	
-	
 
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Hexagon> hexagons = new ArrayList<>();
@@ -117,10 +116,10 @@ public class Partida {
 
 	// Constructor amb parametres //
 
-	public Partida(EstatPartida estat, Date dataInici, int ronda, Integer ultimaTirada, Integer puntsPerGuanyar, Boolean dausTirats,
+	public Partida(Date dataInici, int ronda, Integer ultimaTirada, Integer puntsPerGuanyar, Boolean dausTirats,
 			Boolean lladrePendent, Jugador jugadorActiu, Jugador guanyador) {
 		super();
-		this.estat = estat.PREPARACIO;
+		this.estat = EstatPartida.PREPARACIO;
 		this.dataInici = dataInici;	
 		this.ronda = ronda;
 		this.ultimaTirada = ultimaTirada;
