@@ -89,7 +89,7 @@ public class Hexagon {
         this.r = r;
         this.numero = numero;
         this.partida = partida;
-        this.terreny = null;       
+        this.terreny = terreny;       
     }
     
     
