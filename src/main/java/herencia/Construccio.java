@@ -79,5 +79,5 @@ public abstract class Construccio {
 	public int hashCode() {
 		return Construccio.class.hashCode();
 	}
-
+	
 }

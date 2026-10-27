@@ -49,21 +49,20 @@ public abstract class Assentament extends Construccio {
 	
 	// EQUALS //
 	
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (!(o instanceof Assentament other)) return false;
-			return getId() != null && getId().equals(other.getId());
-		}
-		
-		
-	// HASHCODE /
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Assentament other))
+			return false;
+		return getId() != null && getId().equals(other.getId());
+	}
 
-		@Override
-		public int hashCode() {
-			return Partida.class.hashCode();
-		}
-		
+	@Override
+	public int hashCode() {
+		return Assentament.class.hashCode();
+	}
+
 		
 	
 	// TOSTRING //

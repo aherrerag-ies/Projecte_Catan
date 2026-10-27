@@ -19,7 +19,7 @@ public class Carretera extends Construccio {
 	protected Carretera() {
 		
 	}
-	protected Carretera(Aresta aresta) {
+	public Carretera(Aresta aresta) {
 		this.aresta = aresta;
 	}
 	
