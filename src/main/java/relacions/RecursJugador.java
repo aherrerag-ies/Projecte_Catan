@@ -1,7 +1,5 @@
 package relacions;
 
-import java.util.Objects;
-
 import enumeration.TipusRecurs;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
