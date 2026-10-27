@@ -34,12 +34,12 @@ public class Partida {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(name="estat",nullable = false)
+	@Column(name = "estat", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private EstatPartida estat;
-	
-	@Column(name="data_inici",nullable = false)
-	//falta algo mas en date @
+
+	@Column(name = "data_inici", nullable = false)
+	// falta algo mas en date @
 	private Date dataInici;
 
 	@Column(name = "ronda", nullable = false)
@@ -57,28 +57,23 @@ public class Partida {
 	@Column(name = "lladre_pendent", nullable = false)
 	private Boolean lladrePendent;
 
-	
 	// Relacions amb jugador //
-	
+
 	@OneToOne
 	@JoinColumn(name = "jugador_actiu_id", nullable = true)
-	//Falta relacion 1:1
 	private Jugador jugadorActiu;
 
 	@ManyToOne
 	@JoinColumn(name = "guanyador_id", nullable = true)
 	private Jugador guanyador;
-	
-	
+
 	// Relacions amb lladre //
-	
+
 	@ManyToOne
 	@JoinColumn(name = "hexagon_lladre_id", nullable = true)
 	private Hexagon hexagonLladre;
-	
 
 	// Relacions amb taulell //
-	
 
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Hexagon> hexagons = new ArrayList<>();
@@ -88,31 +83,21 @@ public class Partida {
 
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Aresta> arestes = new ArrayList<>();
-	
-	
+
 	// Relacions amb els jugadors //
-	
-	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL,orphanRemoval = true)
+
+	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Jugador> jugadors = new ArrayList<>();
-	
-	
-	
+
 	// Relacions amb cartes desenvolupament //
-	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL,orphanRemoval = true)
+	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CartaDesenvolupament> cartes = new ArrayList<>();
 
-	
-	
-	
-	
 	// Constructor sense parametres //
 
 	public Partida() {
-		
+
 	}
-	
-	
-	
 
 	// Constructor amb parametres //
 
@@ -120,7 +105,7 @@ public class Partida {
 			Boolean lladrePendent, Jugador jugadorActiu, Jugador guanyador) {
 		super();
 		this.estat = EstatPartida.PREPARACIO;
-		this.dataInici = dataInici;	
+		this.dataInici = dataInici;
 		this.ronda = ronda;
 		this.ultimaTirada = ultimaTirada;
 		this.puntsPerGuanyar = puntsPerGuanyar;
@@ -128,13 +113,10 @@ public class Partida {
 		this.lladrePendent = lladrePendent;
 		this.jugadorActiu = jugadorActiu;
 		this.guanyador = guanyador;
-		
-		
-		
-		
+
 	}
 
-	// Getters / Setters
+	// Getters / Setters //
 
 	public Integer getId() {
 		return id;
@@ -167,21 +149,17 @@ public class Partida {
 	public Integer getPuntsPerGuanyar() {
 		return puntsPerGuanyar;
 	}
-	
-	
-	//Metodo para añadir los puntos que nosotros queramos para ganar
-	
-	 public void setPuntsPerGuanyar(Integer puntsPerGuanyar) {
 
-	        if (puntsPerGuanyar == null || 
-	        		puntsPerGuanyar < 1) {
-	            throw new IllegalArgumentException(
-	                "Els punts per guanyar han de ser superiors a zero"
-	            );
-	        }
+	// Metodo para añadir los puntos que nosotros queramos para ganar
 
-	        this.puntsPerGuanyar = puntsPerGuanyar;
-	    }
+	public void setPuntsPerGuanyar(Integer puntsPerGuanyar) {
+
+		if (puntsPerGuanyar == null || puntsPerGuanyar < 1) {
+			throw new IllegalArgumentException("Els punts per guanyar han de ser superiors a zero");
+		}
+
+		this.puntsPerGuanyar = puntsPerGuanyar;
+	}
 
 	public Boolean getDausTirats() {
 		return dausTirats;
@@ -214,18 +192,76 @@ public class Partida {
 	public void setGuanyador(Jugador guanyador) {
 		this.guanyador = guanyador;
 	}
-	
-	
-	// EQUALS //
-	
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof Partida other)) return false;
-		return getId() != null && getId().equals(other.getId());
+
+	// Aqui falta hacer la relación direccional añadiendo el add para saber en todo
+	// momento en que partida actual estamos, y a que Hexagon pertenece
+
+	public List<Hexagon> getHexagons() {
+		return hexagons;
+	}
+
+	public void setHexagons(List<Hexagon> hexagons) {
+		this.hexagons = hexagons;
+	}
+
+	public List<Vertex> getVertexs() {
+		return vertexs;
+	}
+
+	public void setVertexs(List<Vertex> vertexs) {
+		this.vertexs = vertexs;
+	}
+
+	public List<Aresta> getArestes() {
+		return arestes;
+	}
+
+	public Hexagon getHexagonLladre() {
+		return hexagonLladre;
+	}
+
+	public void setHexagonLladre(Hexagon hexagonLladre) {
+		this.hexagonLladre = hexagonLladre;
+	}
+
+	public void setArestes(List<Aresta> arestes) {
+		this.arestes = arestes;
+	}
+
+	// Metodo afegir vertex i saber en todo momento a que partida pertenece
+
+	public void afegirVertex(Vertex vertex) {
+		if (vertex == null) {
+			throw new IllegalArgumentException("El vèrtex no pot ser null");
+		}
+		// Establim la relació en els dos sentits:
+		vertex.setPartida(this); // El vèrtex sap en quina partida està
+		this.vertexs.add(vertex); // La partida guarda el vèrtex a la seva llista
+	}
+
+	// Metodo afegir aresta i saber en todo momento a que partida pertenece
+
+	public void afegirAresta(Aresta aresta) {
+		if (aresta == null) {
+			throw new IllegalArgumentException("L'aresta no pot ser null");
+		}
+		// Establim la relació en els dos sentits:
+		aresta.setPartida(this); // El vèrtex sap en quina partida està
+		this.arestes.add(aresta); // La partida guarda el vèrtex a la seva llista
 	}
 	
-	
+
+	// EQUALS //
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof Partida other))
+			return false;
+		return getId() != null && getId().equals(other.getId());
+	}
+
 	// HASHCODE /
 
 	@Override
