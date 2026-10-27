@@ -24,9 +24,23 @@
 		<property name="hibernate.session.events.log">false</property>
 
 		<!-- Totes les entitats -->
+		<!-- Entity package ABSTRACTE -->
+		<mapping class="asbtracte.Assentament"/>
+		<mapping class="asbtracte.Ciutat"/>
+		<mapping class="asbtracte.Construccio"/>
+		<mapping class="asbtracte.Poblat"/>
+		
+			
+			<!-- Entity package TAULELL -->
+		<mapping class="taulell.Aresta"/>
+		<mapping class="taulell.Hexagon"/>
+		<mapping class="taulell.HegaxorVertex"/>
+		<mapping class="taulell.Vertex"/>
+		
+			<!-- Entity package RELACIONS -->
+		<mapping class="relacions.CartaDesenvolupament"/>
 		<mapping class="relacions.Jugador"/>
 		<mapping class="relacions.Partida"/>
-		<mapping class="relacions.CartaDesenvolupament"/>
 		<mapping class="relacions.RecursJugador"/>
 		
 	</session-factory>
