@@ -13,7 +13,7 @@ public class GenericDAO<T, ID extends Serializable> implements IGenericDAO<T, ID
 	protected SessionFactory sessionFactory;
 
 	// Utilitzem el constructor per obtenir la SessionFactory (singleton)
-	public GenericDao() {
+	public GenericDAO() {
 		sessionFactory = SessionManager.getSessionFactory();
 	}
 
@@ -39,7 +39,7 @@ public class GenericDAO<T, ID extends Serializable> implements IGenericDAO<T, ID
 		try {
 			session.beginTransaction();
 			// Recuperem la classe mitjançant getEntityClass
-			T entity = session.get(getEntityClass(), id);
+			T entity = session.find(getEntityClass(), id);
 			session.getTransaction().commit();
 			return entity;
 		} catch (RuntimeException e) {
@@ -55,7 +55,7 @@ public class GenericDAO<T, ID extends Serializable> implements IGenericDAO<T, ID
 			session.beginTransaction();
 			// Dins de la transacció fem servir la mateixa sessió
 			// (no podem cridar get() perquè obriria una altra transacció)
-			T entity = session.get(getEntityClass(), id);
+			T entity = session.find(getEntityClass(), id);
 			if (entity != null) {
 				session.remove(entity);
 			} else {
