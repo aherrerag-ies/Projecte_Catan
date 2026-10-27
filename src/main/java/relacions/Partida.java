@@ -215,12 +215,18 @@ public class Partida {
 		this.guanyador = guanyador;
 	}
 	
+	
+	// EQUALS //
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (!(o instanceof Partida other)) return false;
 		return getId() != null && getId().equals(other.getId());
 	}
+	
+	
+	// HASHCODE /
 
 	@Override
 	public int hashCode() {
