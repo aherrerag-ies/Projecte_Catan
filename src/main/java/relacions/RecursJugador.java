@@ -1,4 +1,7 @@
+
 package relacions;
+
+import java.util.Objects;
 
 import enumeration.TipusRecurs;
 import jakarta.persistence.Column;
@@ -108,7 +111,8 @@ public class RecursJugador {
 		this.quantitat = quantitat;
 	}
 
-	// HASHCODE //
+	
+	// EQUALS //
 
 	@Override
 	public boolean equals(Object o) {
@@ -116,6 +120,9 @@ public class RecursJugador {
 		if (!(o instanceof RecursJugador other)) return false;
 		return getId() != null && getId().equals(other.getId());
 	}
+	
+	
+	// HASHCODE //
 
 	@Override
 	public int hashCode() {
@@ -138,3 +145,4 @@ public class RecursJugador {
 	
 
 }
+

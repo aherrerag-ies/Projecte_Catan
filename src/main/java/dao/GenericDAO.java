@@ -1,3 +1,4 @@
+
 package dao;
 
 import java.io.Serializable;
@@ -119,3 +120,4 @@ public class GenericDAO<T, ID extends Serializable> implements IGenericDAO<T, ID
 	}
 	
 }
+

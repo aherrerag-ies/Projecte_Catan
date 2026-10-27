@@ -31,19 +31,12 @@ public class Vertex {
 	@Column(name = "codi", nullable = false)
 	private int codi;
 
-	@ManyToOne(optional = false)
-
-	@NotNull
-	@Column(name = "coordenada_x", nullable = false)
-	private double x;
-
-	@NotNull
-	@Column(name = "coordenada_y", nullable = false)
-	private double y;
+	
 
 	@ManyToOne(optional = false,fetch = FetchType.EAGER)
 	@JoinColumn(name = "partida_id", nullable = false)
 	private Partida partida;
+	
 	
 	
 	//Constructor sense parametres
@@ -53,11 +46,9 @@ public class Vertex {
 	
 	//Constructor parametres
 
-	public Vertex(Integer codi, Double x, Double y, Partida partida) {
+	public Vertex(Integer codi, Partida partida) {
 
 		this.codi = codi;
-		this.x = x;
-		this.y = y;
 		this.partida = partida;
 	}
 	
@@ -75,21 +66,6 @@ public class Vertex {
 		this.codi = codi;
 	}
 
-	public Double getX() {
-		return x;
-	}
-
-	public void setX(Double x) {
-		this.x = x;
-	}
-
-	public Double getY() {
-		return y;
-	}
-
-	public void setY(Double y) {
-		this.y = y;
-	}
 
 	public Partida getPartida() {
 		return partida;
