@@ -11,7 +11,7 @@ public interface IJugadorDAO extends IGenericDAO<Jugador, Integer>{
 	/*
 	 * Mostra l'inventari de recursos d'un jugador mitjançant una consulta a la BD.
 	 */
-	void MostrarRecursos(int idJugador);
+	void mostrarRecursos(int idJugador);
 	
 	/*
 	 * Construeix una carretera:

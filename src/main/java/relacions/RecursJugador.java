@@ -1,7 +1,4 @@
-
 package relacions;
-
-import java.util.Objects;
 
 import enumeration.TipusRecurs;
 import jakarta.persistence.Column;
@@ -20,7 +17,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-// Consulta definida amb NamedQuery //
 @NamedQuery(name = "RecursJugador.buscarPerJugador", query = """
 		    SELECT r
 		    FROM RecursJugador r
@@ -29,59 +25,96 @@ import jakarta.validation.constraints.NotNull;
 		""")
 @Table(name = "recurs_jugador", uniqueConstraints = {
 		@UniqueConstraint(name = "uk_recurs_jugador_tipus", columnNames = { "jugador_id", "tipus" }) })
-
 public class RecursJugador {
-	
-	// Clau id autogenerada //
+
+	// Clau primària autogenerada //
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	
-	// Relació amb el jugador propietari del recurs // 
-	
+	// Jugador propietari del recurs //
+
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "jugador_id", nullable = false)
 	private Jugador jugador;
 
-	
-	
-	// Tipus de recurs //
-	
+	// Tipus de recurs: FUSTA, MAO, LLANA, BLAT o MINERAL // 
+
 	@NotNull
 	@Enumerated(EnumType.STRING)
-	@Column(name = "tipus", nullable = false)
+	@Column(name = "tipus", nullable = false, length = 20)
 	private TipusRecurs tipus;
 
-	
+	// Quantitat disponible d'aquest recurs
 
-    // Quantitat disponible //
-	
 	@NotNull
 	@Min(0)
 	@Column(name = "quantitat", nullable = false)
-	private int quantitat = 0;
+	private Integer quantitat = 0;
+	
+	
 	
 	
 
-	// Constructor sense parametres //
+	// Constructor sense param //
 
-	public RecursJugador() {
-
+	protected RecursJugador() {
 	}
-	
-	
 
-	// Constructor amb parametres //
+	// Constructor per crear un recurs inicial del jugador //
 
 	public RecursJugador(Jugador jugador, TipusRecurs tipus) {
-		this.jugador = jugador;
-		this.tipus = tipus;
+
+		setJugador(jugador);
+		setTipus(tipus);
 		this.quantitat = 0;
 	}
+	
+	
 
-	// Getter - Setter //
+	// Metodo sumarQuantitat //
+	
+	/**
+	 * Suma una quantitat positiva al recurs.
+	 *
+	 * S'utilitza quan: - Un hexàgon produeix recursos. - El jugador comercia amb la
+	 * banca. - Es reparteixen els recursos inicials.
+	 */
+	
+	public void sumarQuantitat(int quantitat) {
+
+		if (quantitat <= 0) {
+			throw new IllegalArgumentException("La quantitat a sumar ha de ser superior a zero");
+		}
+
+		this.quantitat += quantitat;
+	}
+	
+	// Metodo restarQuantitat //
+
+	/**
+	 * Intenta restar una quantitat al recurs.
+	 *
+	 * @return true si hi havia prou recursos i s'han restat; false si no hi havia
+	 *         prou recursos.
+	 */
+	public boolean restarQuantitat(int quantitat) {
+
+		if (quantitat <= 0) {
+			throw new IllegalArgumentException("La quantitat a restar ha de ser superior a zero");
+		}
+
+		if (this.quantitat < quantitat) {
+			return false;
+		}
+
+		this.quantitat -= quantitat;
+
+		return true;
+	}
+
+	// Getters i setters //
 
 	public Integer getId() {
 		return id;
@@ -92,6 +125,11 @@ public class RecursJugador {
 	}
 
 	public void setJugador(Jugador jugador) {
+
+		if (jugador == null) {
+			throw new IllegalArgumentException("El jugador no pot ser null");
+		}
+
 		this.jugador = jugador;
 	}
 
@@ -100,6 +138,11 @@ public class RecursJugador {
 	}
 
 	public void setTipus(TipusRecurs tipus) {
+
+		if (tipus == null) {
+			throw new IllegalArgumentException("El tipus de recurs no pot ser null");
+		}
+
 		this.tipus = tipus;
 	}
 
@@ -108,41 +151,42 @@ public class RecursJugador {
 	}
 
 	public void setQuantitat(Integer quantitat) {
+
+		if (quantitat == null || quantitat < 0) {
+			throw new IllegalArgumentException("La quantitat no pot ser null ni negativa");
+		}
+
 		this.quantitat = quantitat;
 	}
 
-	
-	// EQUALS //
+	// equals basat en ID //
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof RecursJugador other)) return false;
-		return getId() != null && getId().equals(other.getId());
+	public boolean equals(Object objecte) {
+
+		if (this == objecte) {
+			return true;
+		}
+
+		if (!(objecte instanceof RecursJugador altreRecurs)) {
+			return false;
+		}
+
+		return id != null && id.equals(altreRecurs.id);
 	}
-	
-	
-	// HASHCODE //
+
+	// hashCode estable per a una entitat amb ID autogenerat //
 
 	@Override
 	public int hashCode() {
 		return RecursJugador.class.hashCode();
 	}
 
-
-	
-	// toString //
+	// toString simplificat per evitar recursió amb Jugador //
 
 	@Override
 	public String toString() {
-		return "RecursJugador [id=" + id + ", jugador=" + jugador + ", tipus=" + tipus + ", quantitat=" + quantitat
-				+ "]";
+		return "RecursJugador [id=" + id + ", jugadorId=" + (jugador != null ? jugador.getId() : null) + ", tipus="
+				+ tipus + ", quantitat=" + quantitat + "]";
 	}
-	
-	
-	
-	
-	
-
 }
-
