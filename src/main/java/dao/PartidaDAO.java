@@ -54,19 +54,41 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 
 	private int carregarDades(Session session, Partida partida) {
 
-		// 1. Entitats independents del taulell
-		Map<String, Vertex> vertexs = carregarVertexs(session, partida);
+	    // 1. Cargar vértices
+	    Map<Integer, Vertex> vertexs =
+	            carregarVertexs(session, partida);
 
-		Map<String, Hexagon> hexagons = carregarHexagons(session, partida);
-		// 2. Relacions entre les entitats
-		int totalRelacions = carregarHexagonVertex(session, hexagons, vertexs);
-		// 3. Arestes que connecten als vèrtexs
-		int totalArestes = carregarArestes(session, vertexs, partida);
-		// Comprovem que el taulell tingui les dimensions esperades.
-		if (vertexs.size() != 54 || hexagons.size() != 19 || totalRelacions != 114 || totalArestes != 72) {
-			throw new IllegalStateException("Les dades del tauler no tenen les quantitats esperades.");
-		}
-		return vertexs.size() + hexagons.size() + totalRelacions + totalArestes;
+	    // 2. Cargar hexágonos
+	    Map<Integer, Hexagon> hexagons =
+	            carregarHexagons(session, partida);
+
+	    // 3. Cargar relaciones hexágono-vértice
+	    int totalRelacions =
+	            carregarHexagonVertex(session, hexagons, vertexs);
+
+	    // 4. Cargar aristas
+	    int totalArestes =
+	            carregarArestes(session, vertexs, partida);
+
+	    // Comprobar cantidades
+	    if (vertexs.size() != 54
+	            || hexagons.size() != 19
+	            || totalRelacions != 114
+	            || totalArestes != 72) {
+
+	        throw new IllegalStateException(
+	                "Les dades del tauler no tenen les quantitats esperades. "
+	                + "Vèrtexs=" + vertexs.size()
+	                + ", hexàgons=" + hexagons.size()
+	                + ", relacions=" + totalRelacions
+	                + ", arestes=" + totalArestes
+	        );
+	    }
+
+	    return vertexs.size()
+	            + hexagons.size()
+	            + totalRelacions
+	            + totalArestes;
 	}
 
 	private Map<String, Vertex> carregarVertexs(Session session, Partida partida) {
@@ -75,14 +97,10 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 
 		for (String[] c : llegirCsv("vertexs.csv")) {
 
-<<<<<<< HEAD
 	        Vertex v = new Vertex(
 	            Integer.valueOf(c[0]),
 	            partida
 	        );
-=======
-			Vertex v = new Vertex(Integer.valueOf(c[0]), Double.valueOf(c[1]), Double.valueOf(c[2]), partida);
->>>>>>> a1a519962ebe1afa3a6db275f55569c94c7784fe
 
 			session.persist(v);
 			vertexs.put(c[0], v);
@@ -129,8 +147,20 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 
 	@Override
 	public int IniciarPartida(List<String> nomsJugadors) {
-		// TODO Auto-generated method stub
-		return 0;
+		Session session = sessionFactory.getCurrentSession();
+
+        try {
+            session.beginTransaction();
+
+            int idPartida = iniciarPartida(session, nomsJugadors);
+
+            session.getTransaction().commit();
+            return idPartida;
+
+        } catch (RuntimeException e) {
+            handleException(session, e);
+            return -1;
+        }
 	}
 
 	@Override
