@@ -3,6 +3,7 @@ package dao;
 
 import java.util.List;
 
+
 import org.hibernate.Session;
 
 import enumeration.EstatPartida;
@@ -13,6 +14,7 @@ import relacions.RecursJugador;
 import taulell.Vertex;
 
 public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugadorDAO {
+	
 
 	// 3. MÈTODE PÚBLIC (Interfície) --> MostrarRecursos()
 
@@ -88,7 +90,9 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 
 	@Override
 	public void MillorarACiutat(int idJugador, int idVertex) {
-		// TODO Auto-generated method stub
+		
+		
+		
 
 	}
 
@@ -546,6 +550,11 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 
 		return true;
 	}
+	
+	
+	
+	
+	// METODES AMPLIACIÓN //
 
 	@Override
 	public void MoureLladre(int idJugador, int idHexagon, Integer idJugadorVictima) {
