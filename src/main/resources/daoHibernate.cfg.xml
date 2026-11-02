@@ -26,10 +26,11 @@
 
 		<!-- Les MATEIXES entitats de la sessió de relacions: no es copia cap classe -->
 		<!-- Entity package ABSTRACTE -->
-		<mapping class="asbtracte.Assentament"/>
-		<mapping class="asbtracte.Ciutat"/>
-		<mapping class="asbtracte.Construccio"/>
-		<mapping class="asbtracte.Poblat"/>
+		<mapping class="herencia.Assentament"/>
+		<mapping class="herencia.Ciutat"/>
+		<mapping class="herencia.Construccio"/>
+		<mapping class="herencia.Poblat"/>
+		<mapping class="herencia.Carretera"/>
 		
 			
 			<!-- Entity package TAULELL -->

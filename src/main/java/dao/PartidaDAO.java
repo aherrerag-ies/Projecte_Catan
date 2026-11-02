@@ -7,13 +7,14 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import org.hibernate.Session;
-import relacions.Partida;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.hibernate.Session;
+
+import relacions.Partida;
 import taulell.Aresta;
 import taulell.Hexagon;
 import taulell.HexagonVertex;
@@ -25,17 +26,30 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 	
 	@Override
 	public int carregarDades() {
-		Session session = sessionFactory.getCurrentSession();
-		try {
-			session.beginTransaction();
-			int total = carregarDades(session);
-			session.getTransaction().commit();
-			return total;
-		} catch (RuntimeException e) {
-			// Qualsevol línia errònia -> rollback de TOTA la càrrega
-			handleException(session, e);
-			return -1;
-		}
+
+	    Session session = sessionFactory.getCurrentSession();
+	    try {
+	        session.beginTransaction();
+	        // Crear una partida para asociar el tablero.
+	        Partida partida = new Partida(
+	            new Date(),
+	            1,
+	            null,
+	            10,
+	            false,
+	            false,
+	            null,
+	            null
+	        );
+	        session.persist(partida);
+	        // Cargar el tablero para esta partida.
+	        int total = carregarDades(session, partida);
+	        session.getTransaction().commit();
+	        return total;
+	    } catch (RuntimeException e) {
+	        handleException(session, e);
+	        return -1;
+	    }
 	}
 	
 	private int carregarDades(Session session, Partida partida) {
@@ -73,8 +87,6 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 
 	        Vertex v = new Vertex(
 	            Integer.valueOf(c[0]),
-	            Double.valueOf(c[1]),
-	            Double.valueOf(c[2]),
 	            partida
 	        );
 
