@@ -20,10 +20,10 @@ import taulell.Hexagon;
 import taulell.HexagonVertex;
 import taulell.Vertex;
 
-public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartidaDAO{
+public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartidaDAO {
 
 	private static final String CARPETA_CSV = "/csv/";
-	
+
 	@Override
 	public int carregarDades() {
 
@@ -51,99 +51,82 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 	        return -1;
 	    }
 	}
-	
+
 	private int carregarDades(Session session, Partida partida) {
 
-	    // 1. Entitats independents del taulell
-	    Map<String, Vertex> vertexs = carregarVertexs(session, partida);
+		// 1. Entitats independents del taulell
+		Map<String, Vertex> vertexs = carregarVertexs(session, partida);
 
-	    Map<String, Hexagon> hexagons = carregarHexagons(session, partida);
-	    // 2. Relacions entre les entitats
-	    int totalRelacions =
-	            carregarHexagonVertex(session, hexagons, vertexs);
-	    // 3. Arestes que connecten als vèrtexs
-	    int totalArestes =
-	            carregarArestes(session, vertexs, partida);
-	    // Comprovem que el taulell tingui les dimensions esperades.
-	    if (vertexs.size() != 54
-	            || hexagons.size() != 19
-	            || totalRelacions != 114
-	            || totalArestes != 72) {
-	        throw new IllegalStateException(
-	            "Les dades del tauler no tenen les quantitats esperades."
-	        );
-	    }
-	    return vertexs.size()
-	            + hexagons.size()
-	            + totalRelacions
-	            + totalArestes;
-	} 
+		Map<String, Hexagon> hexagons = carregarHexagons(session, partida);
+		// 2. Relacions entre les entitats
+		int totalRelacions = carregarHexagonVertex(session, hexagons, vertexs);
+		// 3. Arestes que connecten als vèrtexs
+		int totalArestes = carregarArestes(session, vertexs, partida);
+		// Comprovem que el taulell tingui les dimensions esperades.
+		if (vertexs.size() != 54 || hexagons.size() != 19 || totalRelacions != 114 || totalArestes != 72) {
+			throw new IllegalStateException("Les dades del tauler no tenen les quantitats esperades.");
+		}
+		return vertexs.size() + hexagons.size() + totalRelacions + totalArestes;
+	}
 
 	private Map<String, Vertex> carregarVertexs(Session session, Partida partida) {
 
-	    Map<String, Vertex> vertexs = new HashMap<>();
+		Map<String, Vertex> vertexs = new HashMap<>();
 
-	    for (String[] c : llegirCsv("vertexs.csv")) {
+		for (String[] c : llegirCsv("vertexs.csv")) {
 
+<<<<<<< HEAD
 	        Vertex v = new Vertex(
 	            Integer.valueOf(c[0]),
 	            partida
 	        );
+=======
+			Vertex v = new Vertex(Integer.valueOf(c[0]), Double.valueOf(c[1]), Double.valueOf(c[2]), partida);
+>>>>>>> a1a519962ebe1afa3a6db275f55569c94c7784fe
 
-	        session.persist(v);
-	        vertexs.put(c[0], v);
-	    }
+			session.persist(v);
+			vertexs.put(c[0], v);
+		}
 
-	    return vertexs;
-	} 
-	
+		return vertexs;
+	}
+
 	private Map<String, Hexagon> carregarHexagons(Session session, Partida partida) {
-	    Map<String, Hexagon> hexagons = new HashMap<>();
-	    for (String[] c : llegirCsv("hexagons.csv")) {
-	        Hexagon h = new Hexagon(
-	            Integer.valueOf(c[0]),
-	            Integer.valueOf(c[1]),
-	            Integer.valueOf(c[2]),
-	            null,
-	            null,
-	            partida
-	        );
-	        session.persist(h);
-	        hexagons.put(c[0], h);
-	    }
-	    return hexagons;
+		Map<String, Hexagon> hexagons = new HashMap<>();
+		for (String[] c : llegirCsv("hexagons.csv")) {
+			Hexagon h = new Hexagon(Integer.valueOf(c[0]), Integer.valueOf(c[1]), Integer.valueOf(c[2]), null, null,
+					partida);
+			session.persist(h);
+			hexagons.put(c[0], h);
+		}
+		return hexagons;
 	}
-	
+
 	private int carregarHexagonVertex(Session session, Map<String, Hexagon> hexagons, Map<String, Vertex> vertexs) {
-	    int total = 0;
-	    for (String[] c : llegirCsv("hexagon_vertex.csv")) {
-	        Hexagon hexagon = obtenir(hexagons, c[0], "hexagon_vertex.csv");
-	        Vertex vertex = obtenir(vertexs, c[1], "hexagon_vertex.csv");
-	        int posicio = Integer.parseInt(c[2]);
-	        HexagonVertex hv = new HexagonVertex(hexagon, vertex, posicio);
-	        session.persist(hv);
-	        total++;
-	    }
-	    return total;
+		int total = 0;
+		for (String[] c : llegirCsv("hexagon_vertex.csv")) {
+			Hexagon hexagon = obtenir(hexagons, c[0], "hexagon_vertex.csv");
+			Vertex vertex = obtenir(vertexs, c[1], "hexagon_vertex.csv");
+			int posicio = Integer.parseInt(c[2]);
+			HexagonVertex hv = new HexagonVertex(hexagon, vertex, posicio);
+			session.persist(hv);
+			total++;
+		}
+		return total;
 	}
-	
+
 	private int carregarArestes(Session session, Map<String, Vertex> vertexs, Partida partida) {
-	    int total = 0;
-	    for (String[] c : llegirCsv("arestes.csv")) {
-	        Vertex vertexA = obtenir(vertexs, c[1], "arestes.csv");
-	        Vertex vertexB = obtenir(vertexs, c[2], "arestes.csv");
-	        Aresta a = new Aresta(
-	            Integer.valueOf(c[0]),
-	            partida,
-	            vertexA,
-	            vertexB
-	        );
-	        session.persist(a);
-	        total++;
-	    }
-	    return total;
+		int total = 0;
+		for (String[] c : llegirCsv("arestes.csv")) {
+			Vertex vertexA = obtenir(vertexs, c[1], "arestes.csv");
+			Vertex vertexB = obtenir(vertexs, c[2], "arestes.csv");
+			Aresta a = new Aresta(Integer.valueOf(c[0]), partida, vertexA, vertexB);
+			session.persist(a);
+			total++;
+		}
+		return total;
 	}
-	
+
 	@Override
 	public int IniciarPartida(List<String> nomsJugadors) {
 		// TODO Auto-generated method stub
@@ -153,35 +136,33 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 	@Override
 	public void MostrarTauler(int idPartida) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void MostrarPartida(int idPartida) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void TirarDaus(int idPartida) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void ComprovarVictoria(int idPartida) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void ExercitMesGran(int idPartida) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-
-	
 	private List<String[]> llegirCsv(String fitxer) {
 		InputStream is = PartidaDAO.class.getResourceAsStream(CARPETA_CSV + fitxer);
 		if (is == null) {
@@ -206,7 +187,7 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 		}
 		return files;
 	}
-	
+
 	private <E> E obtenir(Map<String, E> mapa, String clau, String fitxer) {
 		E e = mapa.get(clau);
 		if (e == null) {
@@ -214,5 +195,5 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 		}
 		return e;
 	}
-	
+
 }

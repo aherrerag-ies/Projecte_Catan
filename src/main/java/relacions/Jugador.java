@@ -5,6 +5,7 @@ import java.util.List;
 
 import enumeration.ColorJugador;
 import enumeration.TipusRecurs;
+import herencia.Ciutat;
 import herencia.Construccio;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -97,9 +98,6 @@ public class Jugador {
 
 		inicialitzarRecursos();
 	}
-	
-	
-	
 
 	// Metode inicialitzarRecursos
 
@@ -110,9 +108,6 @@ public class Jugador {
 			afegirRecurs(new RecursJugador(this, tipus));
 		}
 	}
-	
-	
-	
 
 	// Metode afegirRecurs
 
@@ -125,9 +120,6 @@ public class Jugador {
 		recurs.setJugador(this);
 		recursos.add(recurs);
 	}
-	
-	
-	
 
 	// Metode afegirConstruccio //
 
@@ -140,9 +132,6 @@ public class Jugador {
 		construccio.setPropietari(this);
 		construccions.add(construccio);
 	}
-	
-	
-	
 
 	// Metode buscarRecurs //
 
@@ -160,9 +149,6 @@ public class Jugador {
 
 		return null;
 	}
-	
-	
-	
 
 	// Metode afegirCarta //
 
@@ -180,9 +166,79 @@ public class Jugador {
 		carta.setRondaCompra(rondaCompra);
 		cartes.add(carta);
 	}
-	
-	
-	
+
+	// Comptar ciutats de cada jugador //
+
+	public int comptarCiutat() {
+
+		int ciutats = 0;
+
+		for (Construccio c : this.construccions) {
+			if (c instanceof Ciutat) {
+				ciutats++;
+			}
+		}
+		return ciutats;
+
+	}
+
+	// Comprova si té els recursos necessaris per Ciutat: //
+	// 2 de BLAT i 3 de MINERAL //
+
+	public boolean teRecursosPerCiutat() {
+		RecursJugador blat = buscarRecurs(TipusRecurs.BLAT);
+		RecursJugador mineral = buscarRecurs(TipusRecurs.MINERAL);
+
+		int quantitatBlat = (blat != null) ? blat.getQuantitat() : 0;
+		int quantitatMineral = (mineral != null) ? mineral.getQuantitat() : 0;
+
+		return quantitatBlat >= 2 && quantitatMineral >= 3;
+	}
+
+	// Comprova si té els recursos necessaris per Poblat //
+	// 1 FUSTA + 1 MAÓ + 1 LLANA + 1 BLAT //
+
+	public boolean teRecursosPerPoblat() {
+		RecursJugador fusta = buscarRecurs(TipusRecurs.FUSTA);
+		RecursJugador mao = buscarRecurs(TipusRecurs.MAO);
+		RecursJugador llana = buscarRecurs(TipusRecurs.LLANA);
+		RecursJugador blat = buscarRecurs(TipusRecurs.BLAT);
+
+		int quantitatFusta = (fusta != null) ? fusta.getQuantitat() : 0;
+		int quantitatMao = (mao != null) ? mao.getQuantitat() : 0;
+		int quantitatLlana = (llana != null) ? llana.getQuantitat() : 0;
+		int quantitatBlat = (blat != null) ? blat.getQuantitat() : 0;
+
+		return quantitatFusta >= 1 && quantitatMao >= 1 && quantitatLlana >= 1 && quantitatBlat >= 1;
+	}
+
+	// Comprova si té els recursos necessaris per Carretera: //
+	// 1 FUSTA + 1 MAÓ //
+
+	public boolean teRecursosPerCarretera() {
+		RecursJugador fusta = buscarRecurs(TipusRecurs.FUSTA);
+		RecursJugador mao = buscarRecurs(TipusRecurs.MAO);
+
+		int quantitatFusta = (fusta != null) ? fusta.getQuantitat() : 0;
+		int quantitatMao = (mao != null) ? mao.getQuantitat() : 0;
+
+		return quantitatFusta >= 1 && quantitatMao >= 1;
+	}
+
+	// Comprova si té els recursos necessaris per Carta Desenvolupament: //
+	// 1 BLAT + 1 LLANA + 1 MINERAL //
+
+	public boolean teRecursosPerCartaDesenvolupament() {
+		RecursJugador blat = buscarRecurs(TipusRecurs.BLAT);
+		RecursJugador llana = buscarRecurs(TipusRecurs.LLANA);
+		RecursJugador mineral = buscarRecurs(TipusRecurs.MINERAL);
+
+		int quantitatBlat = (blat != null) ? blat.getQuantitat() : 0;
+		int quantitatLlana = (llana != null) ? llana.getQuantitat() : 0;
+		int quantitatMineral = (mineral != null) ? mineral.getQuantitat() : 0;
+
+		return quantitatBlat >= 1 && quantitatLlana >= 1 && quantitatMineral >= 1;
+	}
 
 	// Getters / Setters
 
@@ -241,16 +297,15 @@ public class Jugador {
 	public List<CartaDesenvolupament> getCartes() {
 		return cartes;
 	}
-	
-	
-	
 
 	// HASHCODE //
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof Jugador other)) return false;
+		if (this == o)
+			return true;
+		if (!(o instanceof Jugador other))
+			return false;
 		return getId() != null && getId().equals(other.getId());
 	}
 
@@ -258,8 +313,6 @@ public class Jugador {
 	public int hashCode() {
 		return Jugador.class.hashCode();
 	}
-	
-	
 
 	// toString
 
