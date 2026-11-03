@@ -1,6 +1,8 @@
 package herencia;
 
+
 import jakarta.persistence.Entity;
+
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
