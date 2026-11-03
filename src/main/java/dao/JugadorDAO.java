@@ -3,11 +3,14 @@ package dao;
 
 import java.util.List;
 
-
 import org.hibernate.Session;
+
 
 import enumeration.EstatPartida;
 import enumeration.TipusRecurs;
+import herencia.Assentament;
+import herencia.Poblat;
+import herencia.Ciutat;
 import relacions.Jugador;
 import relacions.Partida;
 import relacions.RecursJugador;
@@ -16,7 +19,7 @@ import taulell.Vertex;
 public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugadorDAO {
 	
 
-	// 3. MÈTODE PÚBLIC (Interfície) --> MostrarRecursos()
+	// 3. METODE PUBLIC (Interficie) --> MostrarRecursos() //
 
 	@Override
 	public void mostrarRecursos(int idJugador) {
@@ -44,7 +47,7 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 		}
 	}
 
-	// 3. MÈTODE PRIVAT AUXILIAR --> --> MostrarRecursos()
+	// 3. METODE PRIVAT AUXILIAR --> --> MostrarRecursos() //
 
 	private String consultarRecursos(Session session, int idJugador) {
 
@@ -82,20 +85,187 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 
 	}
 
+	
+	
 	@Override
 	public void ConstruirPoblat(int idJugador, int idVertex) {
 		// TODO Auto-generated method stub
 
 	}
+	
+	
+	// 6. METODE PUBLIC MILLORAR CIUTAT //
 
 	@Override
 	public void MillorarACiutat(int idJugador, int idVertex) {
-		
-		
-		
 
+	    if (idJugador <= 0 || idVertex <= 0) {
+	        System.out.println("Els identificadors han de ser superiors a zero");
+	        return;
+	    }
+
+	    Session session = sessionFactory.getCurrentSession();
+
+	    try {
+
+	        session.beginTransaction();
+
+	        String resultat = millorarACiutat(session, idJugador, idVertex);
+
+	        session.getTransaction().commit();
+
+	        System.out.println(resultat);
+
+	    } catch (RuntimeException e) {
+
+	        handleException(session, e);
+
+	        System.out.println("Error en intentar millorar el poblat a ciutat");
+	    }
+	}
+	
+	// 6. METODE MILLORAR CIUTAT PRIVATE //
+	
+	
+	private String millorarACiutat(Session session, int idJugador, int idVertex) {
+
+	    // 1. Buscar el jugador //
+
+	    Jugador jugador = session.find(Jugador.class, idJugador);
+
+	    if (jugador == null) {
+	        return "No existeix cap jugador amb aquest ID";
+	    }
+
+	    // 2. Obtenim la partida //
+
+	    Partida partida = jugador.getPartida();
+
+	    if (partida == null) {
+	        return "El jugador no pertany a cap partida";
+	    }
+
+	    // 3. Comprobar que la partida esta EN_CURS //
+
+	    if (partida.getEstat() != EstatPartida.EN_CURS) {
+	        return "La partida no esta en curs";
+	    }
+
+	    // 4. Comprobar que es el jugador actiu //
+
+	    Jugador jugadorActiu = partida.getJugadorActiu();
+
+	    if (jugadorActiu == null ||
+	            !jugadorActiu.getId().equals(idJugador)) {
+
+	        return "No es el teu torn";
+	    }
+
+	    // 5. Comprobar que a tirat daus //
+
+	    if (!Boolean.TRUE.equals(partida.getDausTirats())) {
+	        return "Has de tirar els daus abans de construir";
+	    }
+
+
+	    // 6. Buscar vertex //
+
+	    Vertex vertex = session.find(Vertex.class, idVertex);
+
+	    if (vertex == null) {
+	        return "No existeix aquest vertex";
+	    }
+
+	    // 8. Comprobar que el vertex pertany a la partida del jugador //
+
+	    if (vertex.getPartida() == null ||
+	            !vertex.getPartida().getId().equals(partida.getId())) {
+
+	        return "El vertex pertany a una altra partida";
+	    }
+
+	    // 9. Buscar el poblat d'aquest vertex //
+
+	    Poblat poblat = session.createQuery("""
+	            SELECT p
+	            FROM Poblat p
+	            WHERE p.vertex.id = :idVertex
+	            """, Poblat.class)
+	            .setParameter("idVertex", idVertex)
+	            .uniqueResult();
+
+	    if (poblat == null) {
+	        return "No hi ha cap poblat en aquest vertex per millorar";
+	    }
+
+	    // 10. Comprobar que el poblat pertany al jugador //
+
+	    if (!poblat.getPropietari().getId().equals(idJugador)) {
+	        return "Aquest poblat no és teu";
+	    }
+
+	    // 11. Comprobar el limit de 4 ciutats //
+
+	    Long nombreCiutats = session.createNamedQuery(
+	            "Ciutat.comptarPerJugador", Long.class)
+	            .setParameter("idJugador", idJugador)
+	            .getSingleResult();
+
+	    if (nombreCiutats >= 4) {
+	        return "Has arribat al limit de 4 ciutats";
+	    }
+
+	    // 12. Comprobar recursos necessaris //
+
+	    if (!jugador.teRecursosPerCiutat()) {
+	        return "No tens prou recursos. Necessites 2 BLAT i 3 MINERAL";
+	    }
+
+	    // 13. Filtrar recursos del jugador //
+
+	    RecursJugador blat = buscarRecursJugador(
+	            session, idJugador, TipusRecurs.BLAT);
+
+	    RecursJugador mineral = buscarRecursJugador(
+	            session, idJugador, TipusRecurs.MINERAL);
+
+	    if (blat == null || mineral == null) {
+	        return "No s'han trobat els recursos necessaris";
+	    }
+
+	    // 14. Descontar els recursos //
+
+	    blat.restarQuantitat(2);
+	    mineral.restarQuantitat(3);
+
+	    // 15. Eliminar el poblat antic //
+
+	    jugador.getConstruccions().remove(poblat);
+
+	    session.remove(poblat);
+	    
+	    // Forçem la eliminació abans de crear la ciutat //
+
+	    session.flush();
+	    
+	    
+
+	    // 16. Crear la nova ciutat al mateix vertex //
+
+	    Ciutat ciutat = new Ciutat(jugador, vertex);
+
+	    jugador.afegirConstruccio(ciutat);
+
+	    session.persist(ciutat);
+
+	    // 17. Tornar el resultat
+
+	    return "Ciutat creada correctament al vertex " + idVertex;
 	}
 
+	
+	// 7. METODE COMERCIAR BANCA PUBLIC //
+	
 	@Override
 	public void ComerciarBanca(int idJugador, TipusRecurs dona, TipusRecurs rep) {
 
@@ -131,10 +301,12 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 			System.out.println("Error en realitzar el comerç amb la banca");
 		}
 	}
+	
+	// 7. METODE MILLORAR CIUTAT PRIVATE //
 
 	private String comerciarBanca(Session session, int idJugador, TipusRecurs dona, TipusRecurs rep) {
 
-		// 1. Buscar el jugador
+		// 1. Buscar el jugador //
 
 		Jugador jugador = session.find(Jugador.class, idJugador);
 
@@ -142,43 +314,43 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 			return "No s'ha trobat cap jugador amb l'ID: " + idJugador;
 		}
 
-		// 2. Comprobar que el jugador pertenece a una partida
+		// 2. Comprobar pertany a una partida //
 
 		if (jugador.getPartida() == null) {
 			return "El jugador no pertany a cap partida";
 		}
 
-		// 3. Comprobar que la partida está EN_CURS
+		// 3. Comprobar que la partida esta EN_CURS
 
 		if (jugador.getPartida().getEstat() != EstatPartida.EN_CURS) {
 
-			return "La partida no està en curs";
+			return "La partida no esta en curs";
 		}
 
-		// 4. Comprobar que es el jugador activo
+		// 4. Comprobar que es el jugador actiu
 
 		Jugador jugadorActiu = jugador.getPartida().getJugadorActiu();
 
 		if (jugadorActiu == null || !jugadorActiu.getId().equals(jugador.getId())) {
 
-			return "No és el teu torn";
+			return "No es el teu torn";
 		}
 
-		// 5. Comprobar que ya se han tirado los dados
+		// 5. Comprobar que ja s'han tirat els daus //
 
 		if (!Boolean.TRUE.equals(jugador.getPartida().getDausTirats())) {
 
 			return "Has de tirar els daus abans de comerciar";
 		}
 
-		// 6. Comprobar que no hay ladrón pendiente
+		// 6. Comprobar que no hi ha lladre pendent //
 
 		if (Boolean.TRUE.equals(jugador.getPartida().getLladrePendent())) {
 
-			return "No es pot comerciar mentre el lladre està pendent";
+			return "No es pot comerciar mentre el lladre esta pendent";
 		}
 
-		// 7. Buscar los dos registros del inventario
+		// 7. Buscar els dos registres de l'inventari //
 
 		RecursJugador recursDona = buscarRecursJugador(session, idJugador, dona);
 
@@ -192,13 +364,13 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 			return "No s'ha trobat el recurs que vols rebre";
 		}
 
-		// 8. Comprobar que tiene al menos 4 unidades
+		// 8. Comprobar que té 4 unitats de recursos //
 
 		if (recursDona.getQuantitat() < 4) {
 			return "No tens 4 recursos de tipus " + dona;
 		}
 
-		// 9. Realizar el intercambio 4 por 1
+		// 9. Realizar intercanvi 4 per 1 //
 
 		boolean restat = recursDona.restarQuantitat(4);
 
@@ -208,13 +380,15 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 
 		recursRep.sumarQuantitat(1);
 
-		// No hace falta session.merge() porque ambos objetos
-		// están gestionados por la sesión actual.
+		
 
 		return "Comerç realitzat correctament: " + "has donat 4 " + dona + " i has rebut 1 " + rep;
 	}
+	
+	
+	
 
-	// Metodo auxiliar para buscar recurso //
+	// METODE PRIVAT PER BUSCAR RECURS JUGADOR //
 
 	private RecursJugador buscarRecursJugador(Session session, int idJugador, TipusRecurs tipus) {
 
@@ -230,8 +404,10 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 
 		return null;
 	}
+	
+	
 
-	// Metode calcular punts //
+	// METODE PUBLIC CALCULAR PUNTS //
 
 	@Override
 	public int CalcularPunts(int idJugador) {
@@ -258,7 +434,7 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 		}
 	}
 
-	// Metode calcular punt privat //
+	// METODE PRIVATE CALCULAR PUNTS //
 
 	private int calcularPunts(Session session, int idJugador) {
 
@@ -280,8 +456,10 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 
 		return puntsPoblats + puntsCiutats;
 	}
+	
+	
 
-	// Metode public PassarTorn //
+	// METODE PUBLIC PASSAR TORN //
 
 	@Override
 	public void PassarTorn(int idJugador) {
@@ -310,11 +488,11 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 
 	}
 
-	// METODE PRIVAT passarTorn //
+	// METODE PRIVAT PASSAR TORN //
 
 	private String passarTorn(Session session, int idJugador) {
 
-		// 1. Busquem el jugador
+		// 1. Busquem el jugador //
 
 		Jugador jugador = session.find(Jugador.class, idJugador);
 
@@ -322,7 +500,7 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 			return "No existeix cap jugador amb l'ID: " + idJugador;
 		}
 
-		// 2. Comprovem que pertanyi a una partida
+		// 2. Comprovem que pertanyi a una partida //
 
 		Partida partida = jugador.getPartida();
 
@@ -330,30 +508,25 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 			return "El jugador no pertany a cap partida";
 		}
 
-		// 3. Una partida finalitzada no admet accions
+		// 3. Una partida finalitzada no admet accions //
 
 		if (partida.getEstat() == EstatPartida.FINALITZADA) {
 
-			return "La partida ja està finalitzada";
+			return "La partida ja esta finalitzada";
 		}
 
-		// 4. Comprovem que sigui el jugador actiu
+		// 4. Comprovem que sigui el jugador actiu //
 
 		Jugador jugadorActiu = partida.getJugadorActiu();
 
 		if (jugadorActiu == null || !jugadorActiu.getId().equals(jugador.getId())) {
 
-			return "No és el teu torn";
+			return "No es el teu torn";
 		}
 
-		// 5. No es pot passar torn amb el lladre pendent
+		
 
-		if (Boolean.TRUE.equals(partida.getLladrePendent())) {
-
-			return "No es pot passar torn mentre " + "el moviment del lladre està pendent";
-		}
-
-		// 6. Obtenim els jugadors ordenats pel torn
+		// 5. Obtenim els jugadors ordenats pel torn //
 
 		List<Jugador> jugadors = session.createQuery("""
 				SELECT j
@@ -366,7 +539,7 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 			return "La partida no té jugadors";
 		}
 
-		// 7. Comportament segons l'estat de la partida
+		// 6. Comportament segons l'estat de la partida //
 
 		if (partida.getEstat() == EstatPartida.PREPARACIO) {
 
@@ -380,8 +553,11 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 
 		return "L'estat de la partida no permet passar torn";
 	}
+	
+	
+	
 
-	// Metode passarTonrEnCurs //
+	// MEOTODE PRIVAT PASSAR TORN EN CURS  //
 
 	private String passarTornEnCurs(Partida partida, Jugador jugador, List<Jugador> jugadors) {
 
@@ -416,9 +592,12 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 		partida.setDausTirats(false);
 
 		return "Torn passat correctament a " + seguentJugador.getNom() + ". Ronda actual: " + partida.getRonda();
+		
 	}
+	
+	
 
-	// Metodo passarTornPreparacio //
+	// METODE PRIVAT PASSAR TORN EN PREPARACIO //
 
 	private String passarTornPreparacio(Session session, Partida partida, Jugador jugador, List<Jugador> jugadors) {
 
@@ -426,15 +605,15 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 
 		if (rondaPreparacio == null || rondaPreparacio < 1 || rondaPreparacio > 2) {
 
-			return "La ronda de preparació no és vàlida";
+			return "La ronda de preparació no es vàlida";
 		}
 
-		// Comptem els poblats del jugador
+		// Comptem els poblats del jugador //
 
 		Long nombrePoblats = session.createNamedQuery("Poblat.comptarPerJugador", Long.class)
 				.setParameter("idJugador", jugador.getId()).getSingleResult();
 
-		// Comptem les carreteres del jugador
+		// Comptem les carreteres del jugador //
 
 		Long nombreCarreteres = session.createQuery("""
 				SELECT COUNT(c)
@@ -446,11 +625,11 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 
 		int carreteres = Math.toIntExact(nombreCarreteres);
 
-		/*
-		 * En la ronda 1 ha de tenir: 1 poblat i 1 carretera.
-		 *
-		 * En la ronda 2 ha de tenir: 2 poblats i 2 carreteres.
-		 */
+		
+		 // En la ronda 1 ha de tenir: 1 poblat i 1 carretera
+		 
+		 // En la ronda 2 ha de tenir: 2 poblats i 2 carreteres
+		 
 
 		if (poblats != rondaPreparacio) {
 			return "Has de col·locar el poblat " + "d'aquesta ronda abans de passar torn";
@@ -460,7 +639,7 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 			return "Has de col·locar la carretera " + "d'aquesta ronda abans de passar torn";
 		}
 
-		// Primera ronda: ordre ascendent
+		// PRIMERA RONDA: ordre ASC
 
 		if (rondaPreparacio == 1) {
 
@@ -475,9 +654,9 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 				return "Torn de preparació passat a " + seguent.getNom();
 			}
 
-			/*
-			 * L'últim jugador de la primera ronda comença també la segona ronda.
-			 */
+			
+			// L'últim jugador de la primera ronda comença també la segona ronda.
+			 
 
 			partida.setRonda(2);
 			partida.setJugadorActiu(jugador);
@@ -485,7 +664,7 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 			return "Comença la segona ronda de preparació. " + "Continua el jugador " + jugador.getNom();
 		}
 
-		// Segona ronda: ordre descendent
+		// SEGONA RONDA: ordre DESC
 
 		int indexActual = jugadors.indexOf(jugador);
 
@@ -498,10 +677,9 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 			return "Torn de preparació passat a " + anterior.getNom();
 		}
 
-		/*
-		 * Ha acabat el jugador d'ordre 1. Comprovem que tots tinguin: 2 poblats i 2
-		 * carreteres.
-		 */
+		
+		 // Ha acabat el jugador d'ordre 1. Comprovem que tots tinguin: 2 poblats i 2 carreteres.
+		 
 
 		if (!preparacioCompletada(session, jugadors)) {
 
@@ -523,7 +701,7 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 
 	
 	
-	// Metode auxiliar preparacioCompletada //
+	// METODE AUXILIAR PREPARACIO COMPLETADA //
 
 	private boolean preparacioCompletada(Session session, List<Jugador> jugadors) {
 
