@@ -8,16 +8,20 @@ import org.hibernate.Session;
 
 import enumeration.EstatPartida;
 import enumeration.TipusRecurs;
+
+
 import herencia.Assentament;
 import herencia.Poblat;
 import herencia.Ciutat;
+import herencia.Carretera;
+import herencia.Poblat;
 import relacions.Jugador;
 import relacions.Partida;
 import relacions.RecursJugador;
+import taulell.Aresta;
 import taulell.Vertex;
 
 public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugadorDAO {
-	
 
 	// 3. METODE PUBLIC (Interficie) --> MostrarRecursos() //
 
@@ -83,14 +87,200 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 	public void ConstruirCarretera(int idJugador, int idAresta) {
 		// TODO Auto-generated method stub
 
+		Session session = sessionFactory.getCurrentSession();
+		try {
+			session.beginTransaction();
+			Jugador jugador = session.find(Jugador.class, idJugador);
+			if (jugador == null) {
+				System.out.println("El jugador no existe");
+				throw new IllegalArgumentException();
+			}
+			Aresta aresta = session.find(Aresta.class, idAresta);
+			if (aresta == null) {
+				System.out.println("La aresta no existe");
+				throw new IllegalArgumentException();
+			}
+			if (!jugador.getPartida().getId().equals(aresta.getPartida().getId())) {
+				throw new IllegalArgumentException("El jugador y la aresta no pertenecen a la misma partida");
+			}
+			Long total = session
+					.createQuery("SELECT COUNT(c) FROM Carretera c " + "WHERE c.aresta.id = :idAresta", Long.class)
+					.setParameter("idAresta", idAresta).getSingleResult();
+			if (total > 0) {
+				throw new IllegalArgumentException("Ja hi ha una carretera en aquesta aresta");
+			}
+			Carretera carretera = new Carretera(jugador, aresta);
+			jugador.afegirConstruccio(carretera);
+			session.persist(carretera);
+			session.getTransaction().commit();
+
+		} catch (RuntimeException e) {
+			handleException(session, e);
+		}
+
 	}
 
 	
 	
 	@Override
 	public void ConstruirPoblat(int idJugador, int idVertex) {
-		// TODO Auto-generated method stub
 
+		Session session = sessionFactory.getCurrentSession();
+
+		try {
+
+			session.beginTransaction();
+
+			// 1. Buscar el jugador
+			Jugador jugador = session.find(Jugador.class, idJugador);
+
+			if (jugador == null) {
+				throw new IllegalArgumentException("El jugador no existe");
+			}
+
+			// 2. Buscar el vértice
+			Vertex vertex = session.find(Vertex.class, idVertex);
+
+			if (vertex == null) {
+				throw new IllegalArgumentException("El vértice no existe");
+			}
+
+			// 3. Comprobar que pertenecen a la misma partida
+			Partida partida = jugador.getPartida();
+
+			if (partida == null || !partida.getId().equals(vertex.getPartida().getId())) {
+
+				throw new IllegalArgumentException("El jugador y el vértice no pertenecen a la misma partida");
+			}
+
+			// 4. Comprobar que la partida permite construir
+			if (partida.getEstat() != EstatPartida.PREPARACIO && partida.getEstat() != EstatPartida.EN_CURS) {
+
+				throw new IllegalArgumentException("La partida no permite construir");
+			}
+
+			// 5. Comprobar que es el turno del jugador
+			Jugador jugadorActiu = partida.getJugadorActiu();
+
+			if (jugadorActiu == null || !jugadorActiu.getId().equals(jugador.getId())) {
+
+				throw new IllegalArgumentException("No es el turno de este jugador");
+			}
+
+			// 6. Comprobar que el vértice está libre
+			Long poblatsEnVertex = session.createQuery("""
+					SELECT COUNT(a)
+					FROM Assentament a
+					WHERE a.vertex.id = :idVertex
+					""", Long.class).setParameter("idVertex", idVertex).getSingleResult();
+
+			if (poblatsEnVertex > 0) {
+
+				throw new IllegalArgumentException("Ya existe un poblado o ciudad en este vértice");
+			}
+
+			// 7. Comprobar la regla de distancia
+			for (Aresta aresta : partida.getArestes()) {
+
+				Vertex vertexVeí = null;
+
+				if (aresta.getVertexA().getId() == vertex.getId()) {
+
+					vertexVeí = aresta.getVertexB();
+
+				} else if (aresta.getVertexB().getId() == vertex.getId()) {
+
+					vertexVeí = aresta.getVertexA();
+				}
+
+				if (vertexVeí != null) {
+
+					Long assentamentsVeins = session.createQuery("""
+							SELECT COUNT(a)
+							FROM Assentament a
+							WHERE a.vertex.id = :idVertex
+							""", Long.class).setParameter("idVertex", vertexVeí.getId()).getSingleResult();
+
+					if (assentamentsVeins > 0) {
+
+						throw new IllegalArgumentException(
+								"No puedes construir: hay otro poblado o ciudad demasiado cerca");
+					}
+				}
+			}
+
+			// 8. Comprobar si estamos en la fase de preparación
+			boolean fasePreparacio = partida.getEstat() == EstatPartida.PREPARACIO;
+
+			// 9. Si estamos en partida normal, comprobar los recursos
+			if (!fasePreparacio) {
+
+				if (!Boolean.TRUE.equals(partida.getDausTirats())) {
+
+					throw new IllegalArgumentException("Debes tirar los dados antes de construir");
+				}
+
+				if (Boolean.TRUE.equals(partida.getLladrePendent())) {
+
+					throw new IllegalArgumentException("No puedes construir mientras el ladrón está pendiente");
+				}
+
+				if (!jugador.teRecursosPerPoblat()) {
+
+					throw new IllegalArgumentException("No tienes suficientes recursos para construir un poblado");
+				}
+
+				// 10. Comprobar que existe una carretera propia conectada
+				Long carreteresConnectades = session.createQuery("""
+						SELECT COUNT(c)
+						FROM Carretera c
+						WHERE c.propietari.id = :idJugador
+						  AND (
+						      c.aresta.vertexA.id = :idVertex
+						      OR c.aresta.vertexB.id = :idVertex
+						  )
+						""", Long.class).setParameter("idJugador", idJugador).setParameter("idVertex", idVertex)
+						.getSingleResult();
+
+				if (carreteresConnectades == 0) {
+
+					throw new IllegalArgumentException("El poblado debe estar conectado a una carretera propia");
+				}
+
+			}
+
+			// 11. Crear el poblado
+			Poblat poblat = new Poblat(jugador, vertex);
+
+			// 12. Añadir la construcción al jugador
+			jugador.afegirConstruccio(poblat);
+
+			// 13. Persistir el poblado
+			session.persist(poblat);
+
+			// 14. Descontar recursos solamente en partida normal
+			if (!fasePreparacio) {
+
+				jugador.buscarRecurs(TipusRecurs.FUSTA).restarQuantitat(1);
+
+				jugador.buscarRecurs(TipusRecurs.MAO).restarQuantitat(1);
+
+				jugador.buscarRecurs(TipusRecurs.LLANA).restarQuantitat(1);
+
+				jugador.buscarRecurs(TipusRecurs.BLAT).restarQuantitat(1);
+			}
+
+			// 15. Confirmar la transacción
+			session.getTransaction().commit();
+
+			System.out.println("Poblat construït correctament al vèrtex " + idVertex);
+
+		} catch (RuntimeException e) {
+
+			handleException(session, e);
+
+			System.out.println("Error en construir el poblat: " + e.getMessage());
+		}
 	}
 	
 	
@@ -700,8 +890,11 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 	}
 
 	
-	
+
 	// METODE AUXILIAR PREPARACIO COMPLETADA //
+
+	// Metode auxiliar preparacioCompletada //
+
 
 	private boolean preparacioCompletada(Session session, List<Jugador> jugadors) {
 
@@ -728,10 +921,7 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 
 		return true;
 	}
-	
-	
-	
-	
+
 	// METODES AMPLIACIÓN //
 
 	@Override

@@ -27,68 +27,45 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 	@Override
 	public int carregarDades() {
 
-	    Session session = sessionFactory.getCurrentSession();
-	    try {
-	        session.beginTransaction();
-	        // Crear una partida para asociar el tablero.
-	        Partida partida = new Partida(
-	            new Date(),
-	            1,
-	            null,
-	            10,
-	            false,
-	            false,
-	            null,
-	            null
-	        );
-	        session.persist(partida);
-	        // Cargar el tablero para esta partida.
-	        int total = carregarDades(session, partida);
-	        session.getTransaction().commit();
-	        return total;
-	    } catch (RuntimeException e) {
-	        handleException(session, e);
-	        return -1;
-	    }
+		Session session = sessionFactory.getCurrentSession();
+		try {
+			session.beginTransaction();
+			// Crear una partida para asociar el tablero.
+			Partida partida = new Partida(new Date(), 1, null, 10, false, false, null, null);
+			session.persist(partida);
+			// Cargar el tablero para esta partida.
+			int total = carregarDades(session, partida);
+			session.getTransaction().commit();
+			return total;
+		} catch (RuntimeException e) {
+			handleException(session, e);
+			return -1;
+		}
 	}
 
 	private int carregarDades(Session session, Partida partida) {
 
-	    // 1. Cargar vértices
-	    Map<Integer, Vertex> vertexs =
-	            carregarVertexs(session, partida);
+		// 1. Cargar vértices
+		Map<Integer, Vertex> vertexs = carregarVertexs(session, partida);
 
-	    // 2. Cargar hexágonos
-	    Map<Integer, Hexagon> hexagons =
-	            carregarHexagons(session, partida);
+		// 2. Cargar hexágonos
+		Map<Integer, Hexagon> hexagons = carregarHexagons(session, partida);
 
-	    // 3. Cargar relaciones hexágono-vértice
-	    int totalRelacions =
-	            carregarHexagonVertex(session, hexagons, vertexs);
+		// 3. Cargar relaciones hexágono-vértice
+		int totalRelacions = carregarHexagonVertex(session, hexagons, vertexs);
 
-	    // 4. Cargar aristas
-	    int totalArestes =
-	            carregarArestes(session, vertexs, partida);
+		// 4. Cargar aristas
+		int totalArestes = carregarArestes(session, vertexs, partida);
 
-	    // Comprobar cantidades
-	    if (vertexs.size() != 54
-	            || hexagons.size() != 19
-	            || totalRelacions != 114
-	            || totalArestes != 72) {
+		// Comprobar cantidades
+		if (vertexs.size() != 54 || hexagons.size() != 19 || totalRelacions != 114 || totalArestes != 72) {
 
-	        throw new IllegalStateException(
-	                "Les dades del tauler no tenen les quantitats esperades. "
-	                + "Vèrtexs=" + vertexs.size()
-	                + ", hexàgons=" + hexagons.size()
-	                + ", relacions=" + totalRelacions
-	                + ", arestes=" + totalArestes
-	        );
-	    }
+			throw new IllegalStateException("Les dades del tauler no tenen les quantitats esperades. " + "Vèrtexs="
+					+ vertexs.size() + ", hexàgons=" + hexagons.size() + ", relacions=" + totalRelacions + ", arestes="
+					+ totalArestes);
+		}
 
-	    return vertexs.size()
-	            + hexagons.size()
-	            + totalRelacions
-	            + totalArestes;
+		return vertexs.size() + hexagons.size() + totalRelacions + totalArestes;
 	}
 
 	private Map<String, Vertex> carregarVertexs(Session session, Partida partida) {
@@ -97,10 +74,7 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 
 		for (String[] c : llegirCsv("vertexs.csv")) {
 
-	        Vertex v = new Vertex(
-	            Integer.valueOf(c[0]),
-	            partida
-	        );
+			Vertex v = new Vertex(Integer.valueOf(c[0]), partida);
 
 			session.persist(v);
 			vertexs.put(c[0], v);
@@ -149,18 +123,18 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 	public int IniciarPartida(List<String> nomsJugadors) {
 		Session session = sessionFactory.getCurrentSession();
 
-        try {
-            session.beginTransaction();
+		try {
+			session.beginTransaction();
 
-            int idPartida = iniciarPartida(session, nomsJugadors);
+			int idPartida = iniciarPartida(session, nomsJugadors);
 
-            session.getTransaction().commit();
-            return idPartida;
+			session.getTransaction().commit();
+			return idPartida;
 
-        } catch (RuntimeException e) {
-            handleException(session, e);
-            return -1;
-        }
+		} catch (RuntimeException e) {
+			handleException(session, e);
+			return -1;
+		}
 	}
 
 	@Override
