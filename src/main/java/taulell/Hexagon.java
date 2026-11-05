@@ -61,11 +61,10 @@ public class Hexagon {
 	@Column(name = "numero", nullable = true)
 	private Integer numero;		// Numero entre 2 i 12 
 
+	@NotNull
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "partida_id", nullable = false)
 	private Partida partida;
-	
-	//Falta relacion con HexagonVertex (lista onetomany) & mappear
 	
 	//Constructor sense parametres
 	
@@ -105,6 +104,9 @@ public class Hexagon {
     }
 
     public void setCodi(Integer codi) {
+        if (codi == null || codi < 0) {
+            throw new IllegalArgumentException("El codi de l'hexàgon no pot ser null ni negatiu");
+        }
         this.codi = codi;
     }
 
@@ -113,6 +115,9 @@ public class Hexagon {
     }
 
     public void setQ(Integer q) {
+        if (q == null) {
+            throw new IllegalArgumentException("La coordenada q no pot ser null");
+        }
         this.q = q;
     }
 
@@ -121,6 +126,9 @@ public class Hexagon {
     }
 
     public void setR(Integer r) {
+        if (r == null) {
+            throw new IllegalArgumentException("La coordenada r no pot ser null");
+        }
         this.r = r;
     }
 
@@ -129,6 +137,9 @@ public class Hexagon {
     }
 
     public void setTerreny(Terreny terreny) {
+        if (terreny == Terreny.DESERT && numero != null) {
+            throw new IllegalArgumentException("El desert no pot tenir número de producció");
+        }
         this.terreny = terreny;
     }
 
@@ -137,6 +148,12 @@ public class Hexagon {
     }
 
     public void setNumero(Integer numero) {
+        if (numero != null && (numero < 2 || numero > 12)) {
+            throw new IllegalArgumentException("El número de producció ha d'estar entre 2 i 12");
+        }
+        if (numero != null && terreny == Terreny.DESERT) {
+            throw new IllegalArgumentException("El desert no pot tenir número de producció");
+        }
         this.numero = numero;
     }
 
@@ -145,6 +162,12 @@ public class Hexagon {
     }
 
     public void setPartida(Partida partida) {
+        if (partida == null) {
+            throw new IllegalArgumentException("La partida de l'hexàgon no pot ser null");
+        }
+        if (this.partida != null && !this.partida.equals(partida)) {
+            throw new IllegalArgumentException("No es pot canviar la partida d'un hexàgon");
+        }
         this.partida = partida;
     }
 

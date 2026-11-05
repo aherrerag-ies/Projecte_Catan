@@ -8,15 +8,14 @@ import org.hibernate.Session;
 import enumeration.EstatPartida;
 import enumeration.TipusRecurs;
 
-import herencia.Assentament;
 import herencia.Poblat;
 import herencia.Ciutat;
 import herencia.Carretera;
-import herencia.Poblat;
 import relacions.Jugador;
 import relacions.Partida;
 import relacions.RecursJugador;
 import taulell.Aresta;
+import taulell.Hexagon;
 import taulell.Vertex;
 
 public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugadorDAO {
@@ -85,6 +84,11 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 
 	@Override
 	public void ConstruirCarretera(int idJugador, int idAresta) {
+
+		if (idJugador <= 0 || idAresta <= 0) {
+			System.out.println("Els identificadors han de ser superiors a zero");
+			return;
+		}
 
 		Session session = sessionFactory.getCurrentSession();
 
@@ -224,28 +228,11 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 				// 11. Comprovar que l'aresta està connectada a una construcció
 				// o carretera pròpia
 
-				Long construccionsConnectades = session.createQuery("""
-						SELECT COUNT(a)
-						FROM Assentament a
-						WHERE a.propietari.id = :idJugador
-						  AND a.vertex.id IN (:vertexA, :vertexB)
-						""", Long.class).setParameter("idJugador", idJugador)
-						.setParameter("vertexA", aresta.getVertexA().getId())
-						.setParameter("vertexB", aresta.getVertexB().getId()).getSingleResult();
+				boolean connectada = teConnexioPerCarretera(session, idJugador, idAresta,
+						aresta.getVertexA().getId())
+						|| teConnexioPerCarretera(session, idJugador, idAresta, aresta.getVertexB().getId());
 
-				Long carreteresConnectades = session.createQuery("""
-						SELECT COUNT(c)
-						FROM Carretera c
-						WHERE c.propietari.id = :idJugador
-						  AND (
-						      c.aresta.vertexA.id IN (:vertexA, :vertexB)
-						      OR c.aresta.vertexB.id IN (:vertexA, :vertexB)
-						  )
-						""", Long.class).setParameter("idJugador", idJugador)
-						.setParameter("vertexA", aresta.getVertexA().getId())
-						.setParameter("vertexB", aresta.getVertexB().getId()).getSingleResult();
-
-				if (construccionsConnectades == 0 && carreteresConnectades == 0) {
+				if (!connectada) {
 
 					throw new IllegalArgumentException(
 							"La carretera no està connectada a cap construcció ni carretera pròpia");
@@ -294,10 +281,46 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 		}
 	}
 
+	private boolean teConnexioPerCarretera(Session session, int idJugador, int idAresta, int idVertex) {
+		Long assentamentsPropietaris = session.createQuery("""
+				SELECT COUNT(a)
+				FROM Assentament a
+				WHERE a.propietari.id = :idJugador
+				  AND a.vertex.id = :idVertex
+				""", Long.class).setParameter("idJugador", idJugador).setParameter("idVertex", idVertex)
+				.getSingleResult();
+
+		if (assentamentsPropietaris > 0) {
+			return true;
+		}
+
+		Long carreteresConnectades = session.createQuery("""
+				SELECT COUNT(c)
+				FROM Carretera c
+				WHERE c.propietari.id = :idJugador
+				  AND c.aresta.id <> :idAresta
+				  AND (c.aresta.vertexA.id = :idVertex OR c.aresta.vertexB.id = :idVertex)
+				  AND NOT EXISTS (
+				      SELECT a.id
+				      FROM Assentament a
+				      WHERE a.vertex.id = :idVertex
+				        AND a.propietari.id <> :idJugador
+				  )
+				""", Long.class).setParameter("idJugador", idJugador).setParameter("idAresta", idAresta)
+				.setParameter("idVertex", idVertex).getSingleResult();
+
+		return carreteresConnectades > 0;
+	}
+
 	// METODE PUBLIC CONSTRUIR POBLAT //
 
 	@Override
 	public void ConstruirPoblat(int idJugador, int idVertex) {
+
+		if (idJugador <= 0 || idVertex <= 0) {
+			System.out.println("Els identificadors han de ser superiors a zero");
+			return;
+		}
 
 		Session session = sessionFactory.getCurrentSession();
 
@@ -440,14 +463,7 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 					throw new IllegalArgumentException("Has de tirar els daus abans de construir");
 				}
 
-				// 13. Comprovar que no hi ha cap moviment del lladre pendent
-
-				if (Boolean.TRUE.equals(partida.getLladrePendent())) {
-
-					throw new IllegalArgumentException("No pots construir mentre el moviment del lladre està pendent");
-				}
-
-				// 14. Comprovar que el jugador té els recursos necessaris
+				// 13. Comprovar que el jugador té els recursos necessaris
 
 				if (!jugador.teRecursosPerPoblat()) {
 
@@ -486,7 +502,13 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 
 			session.persist(poblat);
 
-			// 19. Descomptar els recursos si no estem en la fase de preparació
+			// 19. Repartir els recursos dels hexàgons del segon poblat inicial
+
+			if (fasePreparacio && partida.getRonda() == 2) {
+				repartirRecursosInicials(session, jugador, partida, vertex);
+			}
+
+			// 20. Descomptar els recursos si no estem en la fase de preparació
 
 			if (!fasePreparacio) {
 
@@ -499,7 +521,7 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 				jugador.buscarRecurs(TipusRecurs.BLAT).restarQuantitat(1);
 			}
 
-			// 20. Confirmar els canvis a la base de dades
+			// 21. Confirmar els canvis a la base de dades
 
 			session.getTransaction().commit();
 
@@ -510,6 +532,37 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 			handleException(session, e);
 
 			System.out.println("Error en construir el poblat: " + e.getMessage());
+		}
+	}
+
+	private void repartirRecursosInicials(Session session, Jugador jugador, Partida partida, Vertex vertex) {
+		List<Hexagon> hexagons = session.createQuery("""
+				SELECT hv.hexagon
+				FROM HexagonVertex hv
+				WHERE hv.vertex.id = :idVertex
+				  AND hv.hexagon.partida.id = :idPartida
+				ORDER BY hv.hexagon.codi
+				""", Hexagon.class)
+				.setParameter("idVertex", vertex.getId())
+				.setParameter("idPartida", partida.getId())
+				.getResultList();
+
+		if (hexagons.isEmpty()) {
+			throw new IllegalStateException("El vèrtex no està relacionat amb cap hexàgon");
+		}
+
+		for (Hexagon hexagon : hexagons) {
+			TipusRecurs tipusRecurs = PartidaDAO.obtenirRecurs(hexagon.getTerreny());
+			if (tipusRecurs == null) {
+				continue;
+			}
+
+			RecursJugador recurs = jugador.buscarRecurs(tipusRecurs);
+			if (recurs == null) {
+				throw new IllegalStateException("No s'ha trobat l'inventari del recurs " + tipusRecurs);
+			}
+
+			recurs.sumarQuantitat(1);
 		}
 	}
 
@@ -747,13 +800,6 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 		if (!Boolean.TRUE.equals(jugador.getPartida().getDausTirats())) {
 
 			return "Has de tirar els daus abans de comerciar";
-		}
-
-		// 6. Comprobar que no hi ha lladre pendent //
-
-		if (Boolean.TRUE.equals(jugador.getPartida().getLladrePendent())) {
-
-			return "No es pot comerciar mentre el lladre esta pendent";
 		}
 
 		// 7. Buscar els dos registres de l'inventari //

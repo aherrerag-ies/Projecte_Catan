@@ -32,7 +32,7 @@ public interface IPartidaDAO extends IGenericDAO<Partida, Integer>{
 	/*
 	 *  Tira els daus i executa la producció:
 	 */
-	void TirarDaus(int idPartida);
+	String TirarDaus(int idPartida);
 	
 	/*
 	 * Comprova les condicions de victòria.

@@ -36,7 +36,7 @@
 			<!-- Entity package TAULELL -->
 		<mapping class="taulell.Aresta"/>
 		<mapping class="taulell.Hexagon"/>
-		<mapping class="taulell.HegaxorVertex"/>
+		<mapping class="taulell.HexagonVertex"/>
 		<mapping class="taulell.Vertex"/>
 		
 			<!-- Entity package RELACIONS -->

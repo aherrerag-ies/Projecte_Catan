@@ -9,6 +9,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import relacions.Jugador;
 
 @Entity
@@ -25,6 +26,7 @@ public abstract class Construccio {
 	// Jugador propietari de la construcció //
 	
 	
+	@NotNull
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "propietari_id", nullable = false)
 	private Jugador propietari;

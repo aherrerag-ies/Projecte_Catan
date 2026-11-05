@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import relacions.Jugador;
 import taulell.Aresta;
 
@@ -13,6 +14,7 @@ import taulell.Aresta;
 @Table(name = "carretera")
 public class Carretera extends Construccio {
 
+	@NotNull
 	@OneToOne(optional = false)
 	@JoinColumn(name = "aresta_id", nullable = false, unique = true)
 	private Aresta aresta;
@@ -27,12 +29,7 @@ public class Carretera extends Construccio {
 
 	public Carretera(Jugador propietari, Aresta aresta) {
 		super(propietari);
-
-		if (aresta == null) {
-			throw new IllegalArgumentException("L'aresta no pot ser null");
-		}
-
-		this.aresta = aresta;
+		setAresta(aresta);
 	}
 
 	// Getters / Setters //
@@ -45,6 +42,10 @@ public class Carretera extends Construccio {
 
 		if (aresta == null) {
 			throw new IllegalArgumentException("L'aresta no pot ser null");
+		}
+		if (getPropietari().getPartida() == null
+				|| !getPropietari().getPartida().equals(aresta.getPartida())) {
+			throw new IllegalArgumentException("L'aresta ha de pertànyer a la partida del jugador");
 		}
 
 		this.aresta = aresta;

@@ -6,6 +6,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import relacions.Jugador;
 import taulell.Vertex;
 
@@ -15,6 +16,7 @@ public abstract class Assentament extends Construccio {
 
 	// Atributs //
 
+	@NotNull
 	@OneToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "vertex_id", nullable = false, unique = true)
 	private Vertex vertex;
@@ -45,6 +47,12 @@ public abstract class Assentament extends Construccio {
 		if (vertex == null) {
 			throw new IllegalArgumentException("El vèrtex no pot ser null");
 		}
+		if (getPropietari() != null) {
+			relacions.Partida partida = getPropietari().getPartida();
+			if (partida == null || !partida.equals(vertex.getPartida())) {
+				throw new IllegalArgumentException("El vèrtex ha de pertànyer a la partida del jugador");
+			}
+		}
 		this.vertex = vertex;
 	}
 
@@ -66,4 +74,3 @@ public abstract class Assentament extends Construccio {
 	
 
 }
-

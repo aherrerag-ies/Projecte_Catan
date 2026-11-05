@@ -29,10 +29,12 @@ public class HexagonVertex {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
+	@NotNull
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "hexagon_id", nullable = false)
 	private Hexagon hexagon;
 
+	@NotNull
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(name = "vertex_id", nullable = false)
 	private Vertex vertex;
@@ -72,6 +74,12 @@ public class HexagonVertex {
 	}
 
 	public void setHexagon(Hexagon hexagon) {
+		if (hexagon == null) {
+			throw new IllegalArgumentException("L'hexàgon no pot ser null");
+		}
+		if (vertex != null && !hexagon.getPartida().equals(vertex.getPartida())) {
+			throw new IllegalArgumentException("L'hexàgon i el vèrtex han de pertànyer a la mateixa partida");
+		}
 		this.hexagon = hexagon;
 	}
 
@@ -80,6 +88,12 @@ public class HexagonVertex {
 	}
 
 	public void setVertex(Vertex vertex) {
+		if (vertex == null) {
+			throw new IllegalArgumentException("El vèrtex no pot ser null");
+		}
+		if (hexagon != null && !hexagon.getPartida().equals(vertex.getPartida())) {
+			throw new IllegalArgumentException("L'hexàgon i el vèrtex han de pertànyer a la mateixa partida");
+		}
 		this.vertex = vertex;
 	}
 
@@ -88,6 +102,9 @@ public class HexagonVertex {
 	}
 
 	public void setPosicio(Integer posicio) {
+		if (posicio == null || posicio < 0 || posicio > 5) {
+			throw new IllegalArgumentException("La posició ha d'estar entre 0 i 5");
+		}
 		this.posicio = posicio;
 	}
 }

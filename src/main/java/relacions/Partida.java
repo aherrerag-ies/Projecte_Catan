@@ -1,7 +1,7 @@
 package relacions;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import enumeration.EstatPartida;
@@ -18,6 +18,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import taulell.Aresta;
 import taulell.Hexagon;
 import taulell.Vertex;
@@ -34,26 +37,34 @@ public class Partida {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
+	@NotNull
 	@Column(name = "estat", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private EstatPartida estat;
 
+	@NotNull
 	@Column(name = "data_inici", nullable = false)
-	// falta algo mas en date @
-	private Date dataInici;
+	private LocalDateTime dataInici;
 
+	@Min(1)
 	@Column(name = "ronda", nullable = false)
 	private int ronda;
 
+	@Min(2)
+	@Max(12)
 	@Column(name = "ultima_tirada", nullable = true)
 	private Integer ultimaTirada;
 
+	@NotNull
+	@Min(1)
 	@Column(name = "punts_per_guanyar", nullable = false)
-	private Integer puntsPerGuanyar;
+	private int puntsPerGuanyar;
 
+	@NotNull
 	@Column(name = "daus_tirats", nullable = false)
 	private Boolean dausTirats;
 
+	@NotNull
 	@Column(name = "lladre_pendent", nullable = false)
 	private Boolean lladrePendent;
 
@@ -101,7 +112,7 @@ public class Partida {
 
 	// Constructor amb parametres //
 
-	public Partida(Date dataInici, int ronda, Integer ultimaTirada, Integer puntsPerGuanyar, Boolean dausTirats,
+	public Partida(LocalDateTime dataInici, int ronda, Integer ultimaTirada, Integer puntsPerGuanyar, Boolean dausTirats,
 			Boolean lladrePendent, Jugador jugadorActiu, Jugador guanyador) {
 		super();
 		this.estat = EstatPartida.PREPARACIO;
@@ -127,6 +138,9 @@ public class Partida {
 	}
 
 	public void setEstat(EstatPartida estat) {
+		if (estat == null) {
+			throw new IllegalArgumentException("L'estat de la partida no pot ser null");
+		}
 		this.estat = estat;
 	}
 
@@ -135,7 +149,21 @@ public class Partida {
 	}
 
 	public void setRonda(int ronda) {
+		if (ronda < 1) {
+			throw new IllegalArgumentException("La ronda ha de ser superior a zero");
+		}
 		this.ronda = ronda;
+	}
+
+	public LocalDateTime getDataInici() {
+		return dataInici;
+	}
+
+	public void setDataInici(LocalDateTime dataInici) {
+		if (dataInici == null) {
+			throw new IllegalArgumentException("La data d'inici no pot ser null");
+		}
+		this.dataInici = dataInici;
 	}
 
 	public Integer getUltimaTirada() {
@@ -143,6 +171,9 @@ public class Partida {
 	}
 
 	public void setUltimaTirada(Integer ultimaTirada) {
+		if (ultimaTirada != null && (ultimaTirada < 2 || ultimaTirada > 12)) {
+			throw new IllegalArgumentException("La tirada ha d'estar entre 2 i 12");
+		}
 		this.ultimaTirada = ultimaTirada;
 	}
 
@@ -166,6 +197,9 @@ public class Partida {
 	}
 
 	public void setDausTirats(Boolean dausTirats) {
+		if (dausTirats == null) {
+			throw new IllegalArgumentException("El valor de dausTirats no pot ser null");
+		}
 		this.dausTirats = dausTirats;
 	}
 
@@ -174,6 +208,9 @@ public class Partida {
 	}
 
 	public void setLladrePendent(Boolean lladrePendent) {
+		if (lladrePendent == null) {
+			throw new IllegalArgumentException("El valor de lladrePendent no pot ser null");
+		}
 		this.lladrePendent = lladrePendent;
 	}
 
@@ -182,6 +219,9 @@ public class Partida {
 	}
 
 	public void setJugadorActiu(Jugador jugadorActiu) {
+		if (jugadorActiu != null && !pertanyAquestaPartida(jugadorActiu.getPartida())) {
+			throw new IllegalArgumentException("El jugador actiu ha de pertànyer a aquesta partida");
+		}
 		this.jugadorActiu = jugadorActiu;
 	}
 
@@ -190,18 +230,27 @@ public class Partida {
 	}
 
 	public void setGuanyador(Jugador guanyador) {
+		if (guanyador != null && !pertanyAquestaPartida(guanyador.getPartida())) {
+			throw new IllegalArgumentException("El guanyador ha de pertànyer a aquesta partida");
+		}
 		this.guanyador = guanyador;
 	}
 
-	// Aqui falta hacer la relación direccional añadiendo el add para saber en todo
-	// momento en que partida actual estamos, y a que Hexagon pertenece
 
 	public List<Hexagon> getHexagons() {
 		return hexagons;
 	}
 
 	public void setHexagons(List<Hexagon> hexagons) {
-		this.hexagons = hexagons;
+		if (hexagons == null) {
+			throw new IllegalArgumentException("La llista d'hexàgons no pot ser null");
+		}
+		for (Hexagon hexagon : hexagons) {
+			if (hexagon == null || !pertanyAquestaPartida(hexagon.getPartida())) {
+				throw new IllegalArgumentException("Tots els hexàgons han de pertànyer a aquesta partida");
+			}
+		}
+		this.hexagons = new ArrayList<>(hexagons);
 	}
 
 	public List<Vertex> getVertexs() {
@@ -209,7 +258,15 @@ public class Partida {
 	}
 
 	public void setVertexs(List<Vertex> vertexs) {
-		this.vertexs = vertexs;
+		if (vertexs == null) {
+			throw new IllegalArgumentException("La llista de vèrtexs no pot ser null");
+		}
+		for (Vertex vertex : vertexs) {
+			if (vertex == null || !pertanyAquestaPartida(vertex.getPartida())) {
+				throw new IllegalArgumentException("Tots els vèrtexs han de pertànyer a aquesta partida");
+			}
+		}
+		this.vertexs = new ArrayList<>(vertexs);
 	}
 
 	public List<Aresta> getArestes() {
@@ -221,11 +278,22 @@ public class Partida {
 	}
 
 	public void setHexagonLladre(Hexagon hexagonLladre) {
+		if (hexagonLladre != null && !pertanyAquestaPartida(hexagonLladre.getPartida())) {
+			throw new IllegalArgumentException("L'hexàgon del lladre ha de pertànyer a aquesta partida");
+		}
 		this.hexagonLladre = hexagonLladre;
 	}
 
 	public void setArestes(List<Aresta> arestes) {
-		this.arestes = arestes;
+		if (arestes == null) {
+			throw new IllegalArgumentException("La llista d'arestes no pot ser null");
+		}
+		for (Aresta aresta : arestes) {
+			if (aresta == null || !pertanyAquestaPartida(aresta.getPartida())) {
+				throw new IllegalArgumentException("Totes les arestes han de pertànyer a aquesta partida");
+			}
+		}
+		this.arestes = new ArrayList<>(arestes);
 	}
 
 	// Metodo afegir vertex i saber en todo momento a que partida pertenece
@@ -234,9 +302,35 @@ public class Partida {
 		if (vertex == null) {
 			throw new IllegalArgumentException("El vèrtex no pot ser null");
 		}
+		if (!pertanyAquestaPartida(vertex.getPartida())) {
+			throw new IllegalArgumentException("El vèrtex ha de pertànyer a aquesta partida");
+		}
 		// Establim la relació en els dos sentits:
-		vertex.setPartida(this); // El vèrtex sap en quina partida està
-		this.vertexs.add(vertex); // La partida guarda el vèrtex a la seva llista
+		if (!this.vertexs.contains(vertex)) {
+			this.vertexs.add(vertex);
+		}
+	}
+
+	public void afegirJugador(Jugador jugador) {
+		if (jugador == null) {
+			throw new IllegalArgumentException("El jugador no pot ser null");
+		}
+		if (jugador.getPartida() != null && !pertanyAquestaPartida(jugador.getPartida())) {
+			throw new IllegalArgumentException("El jugador ja pertany a una altra partida");
+		}
+		jugador.setPartida(this);
+		if (!this.jugadors.contains(jugador)) {
+			this.jugadors.add(jugador);
+		}
+	}
+
+	public void afegirHexagon(Hexagon hexagon) {
+		if (hexagon == null || !pertanyAquestaPartida(hexagon.getPartida())) {
+			throw new IllegalArgumentException("L'hexàgon ha de pertànyer a aquesta partida");
+		}
+		if (!this.hexagons.contains(hexagon)) {
+			this.hexagons.add(hexagon);
+		}
 	}
 
 	// Metodo afegir aresta i saber en todo momento a que partida pertenece
@@ -245,9 +339,16 @@ public class Partida {
 		if (aresta == null) {
 			throw new IllegalArgumentException("L'aresta no pot ser null");
 		}
-		// Establim la relació en els dos sentits:
-		aresta.setPartida(this); // El vèrtex sap en quina partida està
-		this.arestes.add(aresta); // La partida guarda el vèrtex a la seva llista
+		if (!pertanyAquestaPartida(aresta.getPartida())) {
+			throw new IllegalArgumentException("L'aresta ha de pertànyer a aquesta partida");
+		}
+		if (!this.arestes.contains(aresta)) {
+			this.arestes.add(aresta);
+		}
+	}
+
+	private boolean pertanyAquestaPartida(Partida altraPartida) {
+		return altraPartida == this || (id != null && id.equals(altraPartida == null ? null : altraPartida.getId()));
 	}
 	
 

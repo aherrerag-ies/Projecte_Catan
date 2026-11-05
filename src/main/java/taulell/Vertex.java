@@ -29,10 +29,11 @@ public class Vertex {
 	@NotNull
 	@Min(0)
 	@Column(name = "codi", nullable = false)
-	private int codi;
+	private Integer codi;
 
 	
 
+	@NotNull
 	@ManyToOne(optional = false,fetch = FetchType.EAGER)
 	@JoinColumn(name = "partida_id", nullable = false)
 	private Partida partida;
@@ -48,8 +49,8 @@ public class Vertex {
 
 	public Vertex(Integer codi, Partida partida) {
 
-		this.codi = codi;
-		this.partida = partida;
+		setCodi(codi);
+		setPartida(partida);
 	}
 	
 	//Getters / Setters
@@ -63,6 +64,9 @@ public class Vertex {
 	}
 
 	public void setCodi(Integer codi) {
+		if (codi == null || codi < 0) {
+			throw new IllegalArgumentException("El codi del vèrtex no pot ser null ni negatiu");
+		}
 		this.codi = codi;
 	}
 
@@ -72,6 +76,12 @@ public class Vertex {
 	}
 
 	public void setPartida(Partida partida) {
+		if (partida == null) {
+			throw new IllegalArgumentException("La partida del vèrtex no pot ser null");
+		}
+		if (this.partida != null && !this.partida.equals(partida)) {
+			throw new IllegalArgumentException("No es pot canviar la partida d'un vèrtex");
+		}
 		this.partida = partida;
 	}
 }
