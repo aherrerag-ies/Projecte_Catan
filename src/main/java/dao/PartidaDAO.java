@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.hibernate.Session;
 
+import herencia.Assentament;
 import relacions.Partida;
 import taulell.Aresta;
 import taulell.Hexagon;
@@ -67,6 +68,8 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 
 		return vertexs.size() + hexagons.size() + totalRelacions + totalArestes;
 	}
+	
+	// METODE carregarVertexs() //
 
 	private Map<String, Vertex> carregarVertexs(Session session, Partida partida) {
 
@@ -82,6 +85,8 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 
 		return vertexs;
 	}
+	
+	// METODE carregarHexagons() //
 
 	private Map<String, Hexagon> carregarHexagons(Session session, Partida partida) {
 		Map<String, Hexagon> hexagons = new HashMap<>();
@@ -94,6 +99,8 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 		return hexagons;
 	}
 
+	// METODE carregarHexagonVertex() //
+	
 	private int carregarHexagonVertex(Session session, Map<String, Hexagon> hexagons, Map<String, Vertex> vertexs) {
 		int total = 0;
 		for (String[] c : llegirCsv("hexagon_vertex.csv")) {
@@ -106,6 +113,8 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 		}
 		return total;
 	}
+	
+	// METODE carregarArestes() //
 
 	private int carregarArestes(Session session, Map<String, Vertex> vertexs, Partida partida) {
 		int total = 0;
@@ -118,6 +127,8 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 		}
 		return total;
 	}
+
+	// METODE INICIAR PARTIDA() //
 
 	@Override
 	public int IniciarPartida(List<String> nomsJugadors) {
@@ -137,10 +148,84 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 		}
 	}
 
+	
+	
+	// METODE MOSTRAR TAULER() //
+
 	@Override
 	public void MostrarTauler(int idPartida) {
-		// TODO Auto-generated method stub
 
+		Session session = sessionFactory.getCurrentSession();
+
+		try {
+			session.beginTransaction();
+
+			String resultat = mostrarTauler(session, idPartida);
+
+			session.getTransaction().commit();
+
+			System.out.println(resultat);
+
+		} catch (RuntimeException e) {
+			handleException(session, e);
+
+			System.out.println("Error en mostrar el tauler");
+		}
+	}
+
+	// METODE AUXILIAR PRIVATE MOSTRAR TAULER() //
+
+	private String mostrarTauler(Session session, int idPartida) {
+
+		Partida partida = session.find(Partida.class, idPartida);
+
+		if (partida == null) {
+			return "No existeix cap partida amb l'ID: " + idPartida;
+		}
+
+		List<Hexagon> hexagons = session.createQuery("""
+				SELECT h
+				FROM Hexagon h
+				WHERE h.partida.id = :idPartida
+				ORDER BY h.codi
+				""", Hexagon.class).setParameter("idPartida", idPartida).getResultList();
+
+		StringBuilder text = new StringBuilder();
+
+		text.append("=== TAULER DE LA PARTIDA ").append(idPartida).append(" ===").append(System.lineSeparator());
+
+		for (Hexagon hexagon : hexagons) {
+
+			boolean teLladre = partida.getHexagonLladre() != null
+					&& partida.getHexagonLladre().getId().equals(hexagon.getId());
+
+			text.append("Hexàgon ").append(hexagon.getCodi()).append(" | Terreny: ").append(hexagon.getTerreny())
+					.append(" | Número: ").append(hexagon.getNumero()).append(" | Lladre: ")
+					.append(teLladre ? "SÍ" : "NO").append(System.lineSeparator());
+
+			List<Assentament> assentaments = session.createQuery("""
+					SELECT a
+					FROM Assentament a
+					WHERE a.vertex.id IN (
+					    SELECT hv.vertex.id
+					    FROM HexagonVertex hv
+					    WHERE hv.hexagon.id = :idHexagon
+					)
+					""", Assentament.class).setParameter("idHexagon", hexagon.getId()).getResultList();
+
+			if (assentaments.isEmpty()) {
+				text.append("  Sense construccions").append(System.lineSeparator());
+			} else {
+				for (Assentament assentament : assentaments) {
+
+					text.append("  - ").append(assentament.getClass().getSimpleName()).append(" al vèrtex ")
+							.append(assentament.getVertex().getId()).append(", propietari: ")
+							.append(assentament.getPropietari().getNom()).append(System.lineSeparator());
+				}
+			}
+		}
+
+		return text.toString();
 	}
 
 	@Override
