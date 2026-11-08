@@ -84,12 +84,12 @@ public class Hexagon {
             Partida partida
             ) {
 
-        this.codi = codi;
-        this.q = q;
-        this.r = r;
-        this.numero = numero;
-        this.partida = partida;
-        this.terreny = null;       
+        setCodi(codi);
+        setQ(q);
+        setR(r);
+        setPartida(partida);
+        setTerreny(terreny);
+        setNumero(numero);
     }
     
     

@@ -20,6 +20,14 @@ import taulell.Vertex;
 
 public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugadorDAO {
 
+	JugadorDAO() {
+		super();
+	}
+
+	JugadorDAO(org.hibernate.SessionFactory sessionFactory) {
+		super(sessionFactory);
+	}
+
 	// 3. METODE PUBLIC (Interficie) --> MostrarRecursos() //
 
 	@Override
@@ -1160,30 +1168,24 @@ public class JugadorDAO extends GenericDAO<Jugador, Integer> implements IJugador
 		return true;
 	}
 
-	// METODES AMPLIACIÓN //
-
 	@Override
 	public void MoureLladre(int idJugador, int idHexagon, Integer idJugadorVictima) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("El moviment del lladre queda fora de l'abast acordat");
 	}
 
 	@Override
 	public void ComprarCarta(int idJugador) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("La compra de cartes queda fora de l'abast acordat");
 	}
 
 	@Override
 	public void JugarCarta(int idJugador, int idCarta, TipusRecurs recurs) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("Jugar cartes queda fora de l'abast acordat");
 	}
 
 	@Override
 	public List<Vertex> VertexsDisponibles(int idJugador) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("La consulta de vèrtexs disponibles queda fora de l'abast acordat");
 	}
 
 }

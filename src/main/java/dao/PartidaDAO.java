@@ -36,6 +36,14 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 
 	private static final String CARPETA_CSV = "/csv/";
 
+	PartidaDAO() {
+		super();
+	}
+
+	PartidaDAO(org.hibernate.SessionFactory sessionFactory) {
+		super(sessionFactory);
+	}
+
 	@Override
 	public int carregarDades() {
 
@@ -387,7 +395,7 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 			if (Boolean.TRUE.equals(partida.getDausTirats())) {
 				throw new IllegalStateException("El jugador actiu ja ha tirat els daus aquest torn");
 			}
-			Random aleatori = new Random();
+			Random aleatori = crearAleatori();
 			int dau1 = aleatori.nextInt(6) + 1;
 			int dau2 = aleatori.nextInt(6) + 1;
 			int tirada = dau1 + dau2;
@@ -479,6 +487,10 @@ public class PartidaDAO extends GenericDAO<Partida, Integer> implements IPartida
 			handleException(session, e);
 			throw e;
 		}
+	}
+
+	protected Random crearAleatori() {
+		return new Random();
 	}
 
 	@Override

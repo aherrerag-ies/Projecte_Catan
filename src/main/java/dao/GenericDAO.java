@@ -18,6 +18,10 @@ public class GenericDAO<T, ID extends Serializable> implements IGenericDAO<T, ID
 		sessionFactory = SessionManager.getSessionFactory();
 	}
 
+	protected GenericDAO(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
 	/*
 	 * Ara si, desenvolupem el codi de manera genèrica ja que totes les classes necessiten aquests mètodes
 	 */
@@ -120,4 +124,3 @@ public class GenericDAO<T, ID extends Serializable> implements IGenericDAO<T, ID
 	}
 	
 }
-

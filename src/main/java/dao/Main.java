@@ -100,11 +100,8 @@ public class Main {
             // Consultes informatives de l'estat de la partida.
             imprimirCapcalera("4. CONSULTES D'ESTAT I PUNTUACIO");
             partidaDAO.ComprovarVictoria(idPartida);
-            partidaDAO.ExercitMesGran(idPartida);
             prova("Executar comprovacio de victoria", true,
                     "Consulta executada; encara no s'ha forcat cap condicio de victoria.");
-            prova("Executar consulta de l'exercit mes gran", true,
-                    "Consulta executada amb l'estat actual dels cavallers.");
 
             // Comprovar les validacions del nombre de jugadors. Aquestes crides
             // han de retornar -1 i no han de crear cap partida.
@@ -143,6 +140,10 @@ public class Main {
             // Tanquem una sola vegada la SessionFactory compartida pels DAO.
             SessionManager.tancar();
             System.out.println("\nSessionFactory tancada.");
+        }
+
+        if (provesFallides > 0) {
+            System.exit(1);
         }
     }
 

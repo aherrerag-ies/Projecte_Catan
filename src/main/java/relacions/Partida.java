@@ -114,7 +114,6 @@ public class Partida {
 
 	public Partida(LocalDateTime dataInici, int ronda, Integer ultimaTirada, Integer puntsPerGuanyar, Boolean dausTirats,
 			Boolean lladrePendent, Jugador jugadorActiu, Jugador guanyador) {
-		super();
 		this.estat = EstatPartida.PREPARACIO;
 		this.dataInici = dataInici;
 		this.ronda = ronda;

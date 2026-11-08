@@ -6,7 +6,7 @@
 	<session-factory>
 		<property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
 		<!-- BD pròpia per no trepitjar la de la sessió de relacions -->
-		<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/videojocs_dao?createDatabaseIfNotExist=true</property>
+		<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/CatanBD?createDatabaseIfNotExist=true</property>
 		<property name="hibernate.connection.username">root</property>
 		<property name="hibernate.connection.password">super3</property>
 
@@ -25,7 +25,7 @@
 		<property name="hibernate.format_sql">true</property>
 
 		<!-- Les MATEIXES entitats de la sessió de relacions: no es copia cap classe -->
-		<!-- Entity package ABSTRACTE -->
+		<!-- Entity package HERENCIA -->
 		<mapping class="herencia.Assentament"/>
 		<mapping class="herencia.Ciutat"/>
 		<mapping class="herencia.Construccio"/>

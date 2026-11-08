@@ -42,6 +42,59 @@ Els objectius principals són:
 - Calcular els punts de victòria de cada jugador.
 - Treballar de manera col·laborativa utilitzant Git i GitHub.
 
+## Abast acordat
+
+Aquest lliurament cobreix la part de Java, Hibernate, JPA i MySQL. No inclou la
+part Spring ni els mètodes o requisits marcats en vermell a l'enunciat. Tampoc
+inclou `ExercitMesGran`. El tauler es consulta i es mostra en text, però no es
+dibuixa.
+
+Les funcionalitats avançades de cartes i lladre es mantenen fora de l'abast;
+que les entitats o interfícies les esmentin no vol dir que estiguin
+implementades.
+
+## Requisits i configuració
+
+- JDK 21.
+- Maven.
+- MySQL Server per executar l'aplicació de demostració.
+
+Les proves automatitzades utilitzen H2 en memòria i no necessiten MySQL.
+
+La configuració activa de l'aplicació DAO és
+`src/main/resources/daoHibernate.cfg.xml`. Aquesta es connecta a MySQL a
+`localhost:3306` i a la base de dades `CatanBD`. Abans d'executar-la, configura
+en aquest fitxer l'usuari i la contrasenya del teu MySQL local. No desis
+credencials personals en un repositori compartit. La URL permet crear la base
+de dades si no existeix, per la qual cosa l'usuari de MySQL ha de tenir els
+permisos corresponents.
+
+**Avís important sobre les dades:** `daoHibernate.cfg.xml` utilitza
+`hibernate.hbm2ddl.auto=create`. Hibernate recrea l'esquema en inicialitzar-se i
+esborra les dades de les taules existents.
+
+Per executar les proves des de l'arrel del projecte:
+
+```powershell
+mvn test
+```
+
+Les proves de `src/test/java/dao/CatanProvesTest.java` utilitzen una base H2
+aïllada i cobreixen la càrrega de la topologia, la creació de partida, la
+preparació, la producció, les accions principals, els torns i la victòria.
+
+Per executar la demostració, inicia MySQL, revisa `daoHibernate.cfg.xml` i
+executa la classe `dao.Main` des de l'IDE. També es pot llançar des de Maven:
+
+```powershell
+mvn org.codehaus.mojo:exec-maven-plugin:3.5.0:java "-Dexec.mainClass=dao.Main"
+```
+
+`Main` crea una partida de demostració, consulta la partida i el tauler en text
+i tanca la `SessionFactory`. No executa automàticament les accions que gasten
+recursos o canvien construccions. Si falla alguna de les comprovacions, el
+procés acaba amb codi d'error.
+
 
 
 ## Estructura del projecte
@@ -55,6 +108,14 @@ src/main/java
 ├── herencia
 ├── relacions
 └── taulell
+
+src/main/resources/
+├── csv/                       # Topologia inicial del tauler
+└── daoHibernate.cfg.xml       # Configuració activa de l'aplicació DAO
+
+src/test/java/dao/
+└── CatanProvesTest.java       # Proves d'integració amb H2
+```
 
 
 
@@ -86,10 +147,11 @@ Per exemple:
 
 ```java
 public class JugadorDAO
-        extends GenericDAO<Jugador, Integer>
-        
-        
-        
+        extends GenericDAO<Jugador, Integer> implements IJugadorDAO {
+    // Implementació específica del DAO
+}
+```
+
 ### IPartidaDAO i PartidaDAO
 
 `IPartidaDAO` defineix les operacions principals relacionades amb una partida de Catan.
@@ -102,11 +164,13 @@ Els mètodes principals definits són:
 
 - `carregarDades()`: carrega la topologia inicial del tauler des dels fitxers CSV.
 - `IniciarPartida()`: crea una partida nova i els seus jugadors.
-- `MostrarTauler()`: mostra els hexàgons i les construccions del tauler.
+- `MostrarTauler()`: consulta i mostra en text els hexàgons i les construccions
+  dels seus vèrtexs; no dibuixa el tauler.
 - `MostrarPartida()`: mostra l'estat actual de la partida i dels jugadors.
 - `TirarDaus()`: genera una tirada i executa la producció de recursos.
 - `ComprovarVictoria()`: comprova si algun jugador ha arribat als punts necessaris.
-- `ExercitMesGran()`: busca el jugador que té l'exèrcit més gran.
+- `ExercitMesGran()`: apareix a la interfície, però no està implementat perquè
+  queda fora de l'abast acordat.
 
 ### Càrrega del tauler
 
@@ -114,6 +178,7 @@ La topologia del tauler es carrega des dels fitxers situats a:
 
 ```text
 src/main/resources/csv
+```
 
 
 
@@ -134,8 +199,10 @@ Els mètodes principals són:
 - `ComerciarBanca()`: intercanvia quatre recursos iguals per un recurs d'un altre tipus.
 - `CalcularPunts()`: calcula els punts obtinguts pels poblats i les ciutats.
 - `PassarTorn()`: actualitza el jugador actiu i controla les rondes de preparació i de joc.
-- `MoureLladre()`, `ComprarCarta()` i `JugarCarta()`: funcionalitats de la part avançada.
-- `VertexsDisponibles()`: retorna les posicions on el jugador pot construir un poblat.
+
+Els mètodes `MoureLladre()`, `ComprarCarta()`, `JugarCarta()` i
+`VertexsDisponibles()` formen part de la interfície, però no estan implementats:
+les funcionalitats avançades corresponents queden fora de l'abast acordat.
 
 ### Comprovacions de les accions
 
@@ -155,10 +222,9 @@ Totes les modificacions es fan dins d'una transacció. Si l'operació acaba corr
 
 ### Inventari de recursos
 
-El mètode `mostrarRecursos()` utilitza una `NamedQuery` definida a `RecursJugador` per obtenir els recursos del jugador des de la base de dades.
-
-```java
-RecursJugador.buscarPerJugador
+El mètode `mostrarRecursos()` utilitza la `NamedQuery`
+`RecursJugador.buscarPerJugador` definida a `RecursJugador` per obtenir els
+recursos del jugador des de la base de dades.
 
 
 
@@ -172,6 +238,7 @@ La configuració d'Hibernate es carrega des del fitxer:
 
 ```text
 daoHibernate.cfg.xml
+```
 
 
 
@@ -292,6 +359,7 @@ Construccio
 └── Assentament
     ├── Poblat
     └── Ciutat
+```
 
 
 
@@ -463,6 +531,7 @@ MAO
 LLANA
 BLAT
 MINERAL
+```
 
 
 
@@ -569,5 +638,3 @@ Hem creat aquesta entitat intermèdia perquè la relació entre `Hexagon` i `Ver
 Aquesta classe permet saber quins sis vèrtexs envolten cada hexàgon. Aquesta informació s'utilitza per determinar quins poblats i ciutats reben recursos quan un hexàgon produeix.
 
 S'han afegit restriccions per evitar repetir una mateixa posició o un mateix vèrtex dins del mateix hexàgon.
-
-
